@@ -5,7 +5,7 @@ This plugin helps querying information from a Cargo.toml file and can be used in
 The plugin accepts only one flag at a time and returns a single string with the requested value.
 Some queries like eq. keywords or authors return multiple values which get separated by line breaks (each value on a new line).
 
-This plugin is inspired by (cargo-edit)[https://github.com/killercup/cargo-edit] and presents itself as a lightweight wrapper around (cargo_toml)[https://gitlab.com/crates.rs/cargo_toml]
+This plugin is inspired by [cargo-edit](https://github.com/killercup/cargo-edit) and presents itself as a lightweight wrapper around [cargo_toml](https://gitlab.com/crates.rs/cargo_toml)
 
 
 ### Contribution
