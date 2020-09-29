@@ -1,7 +1,7 @@
 ### Example
 
 ```
- cargo_info -h
+$ cargo_info -h
 Cargo Info
 Nicolai Unrein <info@auxcontrol.io>
 Query package info from Cargo.toml in a script-friendly way.
