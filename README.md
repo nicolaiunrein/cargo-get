@@ -5,6 +5,23 @@ This plugin helps querying information from a Cargo.toml file and can be used in
 The plugin accepts only one flag at a time and returns a single string with the requested value.
 Some queries like eq. keywords or authors return multiple values which get separated by line breaks (each value on a new line).
 
+
+### Contribution
+Thanks for your interest - we gratefully welcome contributions.
+
+Questions can be asked in issues.
+To help us help you get pull requests merged quickly and smoothly, open an issue before submitted large changes. Please keep the contents of pull requests and commits short. Commit messages should include the intent of the commit.
+cargo-info uses rustfmt for formatting and clippy for linting.
+
+### Installation
+Ensure that you have a fairly recent version of rust/cargo installed.
+```
+$ cargo install cargo-info
+```
+
+(Please check cargo's documentation to learn how cargo install works and how to set up your system so it finds binaries installed by cargo.)
+
+
 ### Basic Example
 
 #### All Options
@@ -15,7 +32,7 @@ Nicolai Unrein <info@auxcontrol.io>
 Query package info from Cargo.toml in a script-friendly way.
 
 USAGE:
-    cargo_info <--version|--authors|--edition|--name|--homepage|--keywords|--license|--links|--description|--categories>
+    cargo info <--version|--authors|--edition|--name|--homepage|--keywords|--license|--links|--description|--categories>
 
 FLAGS:
     -v, --version        get package version
