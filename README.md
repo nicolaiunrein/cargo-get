@@ -1,3 +1,7 @@
+### Overview
+**Cargo plugin to easily query information from Cargo.toml file.**
+This plugin helps querying information from a Cargo.toml file and can be used in shell scripts or CI/CD pipelines.
+
 ### Basic Example
 
 #### All Options
