@@ -1,7 +1,8 @@
-### Example
+### Basic Example
 
+#### All Options
 ```
-$ cargo_info -h
+$ cargo info -h
 Cargo Info
 Nicolai Unrein <info@auxcontrol.io>
 Query package info from Cargo.toml in a script-friendly way.
@@ -21,4 +22,19 @@ FLAGS:
     -d, --description    get package description
     -c, --categories     get package categories
     -h, --help           Prints help information
+```
+
+#### Get Version
+```
+$ cargo info -v
+0.2.1
+
+```
+
+#### Get keywords 
+```
+$ cargo info -k
+command-line-utilities
+development-tools::cargo-plugins
+
 ```
