@@ -7,7 +7,7 @@ use std::path::PathBuf;
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 fn main() {
-    let app = App::new("Cargo Info")
+    let info = App::new("info")
         .setting(AppSettings::DisableVersion)
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::GlobalVersion)
@@ -25,7 +25,6 @@ fn main() {
         .arg("-i --links        'get package links'")
         .arg("-d --description  'get package description'")
         .arg("-c --categories   'get package categories'")
-        //        .arg("-j --json         'format as json'")
         .group(ArgGroup::new("info").required(true).args(&[
             "version",
             "authors",
@@ -39,7 +38,9 @@ fn main() {
             "categories",
         ]));
 
+    let app = App::new("Cargo Info").subcommand(info);
     let matches = app.get_matches();
+    let matches = matches.subcommand_matches("info").unwrap();
 
     let p = search_manifest(&env::current_dir().unwrap()).unwrap();
 

@@ -1,5 +1,5 @@
 [package]
-name = "cargo_info"
+name = "cargo-info"
 version = "0.1.0"
 authors = ["Nicolai Unrein <n.unrein@gmail.com>"]
 edition = "2018"
