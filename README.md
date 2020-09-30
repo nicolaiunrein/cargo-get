@@ -64,3 +64,25 @@ command-line-utilities
 development-tools::cargo-plugins
 
 ```
+
+#### Custom delimiter
+```
+$ cargo info -k --delimiter Tab
+command-line-utilities 	development-tools::cargo-plugins
+
+$ cargo info -k --delimiter=" -- "
+command-line-utilities -- development-tools::cargo-plugins
+
+$ cargo info -k --delimiter=";"
+command-line-utilities;development-tools::cargo-plugins
+
+```
+
+#### Optional Path
+```
+$ cargo info -v --path="../../some/other/project/Cargo.toml"
+0.1.0
+
+```
+
+
