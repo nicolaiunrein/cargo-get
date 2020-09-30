@@ -31,11 +31,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     output(&matches, manifest)
 }
 
-// Remove info argument in order to make it work with or without `info` subcommand
+// Remove get argument in order to make it work with or without `get` subcommand
 fn get_args() -> Vec<String> {
     let mut args: Vec<_> = std::env::args().collect();
 
-    if args.get(1) == Some(&"info".to_owned()) {
+    if args.get(1) == Some(&"get".to_owned()) {
         args.remove(1);
     }
 
@@ -51,19 +51,19 @@ pub fn make_app() -> App<'static> {
         .setting(AppSettings::NoAutoVersion)
         .author("Nicolai Unrein <info@auxcontrol.io>")
         .about("Query package info from Cargo.toml in a script-friendly way.")
-        .arg("-v --version      'get package version'")
-        .arg("-a --authors      'get package authors'")
-        .arg("-e --edition      'get package edition'")
-        .arg("-n --name         'get package name'")
-        .arg("-o --homepage     'get package homepage'")
-        .arg("-k --keywords     'get package keywords'")
-        .arg("-l --license      'get package license'")
-        .arg("-i --links        'get package links'")
-        .arg("-d --description  'get package description'")
-        .arg("-c --categories   'get package categories'")
-        .arg("--root [Path]     'optional entry point'")
+        .arg("-v --version                                      'get package version'")
+        .arg("-a --authors                                      'get package authors'")
+        .arg("-e --edition                                      'get package edition'")
+        .arg("-n --name                                         'get package name'")
+        .arg("-o --homepage                                     'get package homepage'")
+        .arg("-k --keywords                                     'get package keywords'")
+        .arg("-l --license                                      'get package license'")
+        .arg("-i --links                                        'get package links'")
+        .arg("-d --description                                  'get package description'")
+        .arg("-c --categories                                   'get package categories'")
+        .arg("--root [Path]                                     'optional entry point'")
         .arg("--delimiter [Tab | CR | LF | CRLF | String]       'specify delimiter for values'")
-        .group(ArgGroup::new("info").required(true).args(&[
+        .group(ArgGroup::new("get").required(true).args(&[
             "version",
             "authors",
             "edition",

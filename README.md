@@ -13,12 +13,12 @@ Thanks for your interest - we gratefully welcome contributions.
 
 Questions can be asked in issues.
 To help us help you get pull requests merged quickly and smoothly, open an issue before submitted large changes. Please keep the contents of pull requests and commits short. Commit messages should include the intent of the commit.
-cargo-info uses rustfmt for formatting and clippy for linting.
+cargo-get uses rustfmt for formatting and clippy for linting.
 
 ### Installation
 Ensure that you have a fairly recent version of rust/cargo installed.
 ```
-$ cargo install cargo-info
+$ cargo install cargo-get
 ```
 
 (Please check cargo's documentation to learn how cargo install works and how to set up your system so it finds binaries installed by cargo.)
@@ -28,13 +28,13 @@ $ cargo install cargo-info
 
 #### All Options
 ```bash
-$ cargo info -h
+$ cargo get -h
 Cargo Info
 Nicolai Unrein <info@auxcontrol.io>
 Query package info from Cargo.toml in a script-friendly way.
 
 USAGE:
-    cargo-info [OPTIONS] <--version|--authors|--edition|--name|--homepage|--keywords|--license|--links|--description|--categories>
+    cargo-get [OPTIONS] <--version|--authors|--edition|--name|--homepage|--keywords|--license|--links|--description|--categories>
 
 FLAGS:
     -v, --version        get package version
@@ -56,13 +56,13 @@ OPTIONS:
 
 #### Get Version
 ```bash
-$ cargo info -v
+$ cargo get -v
 0.2.1
 ```
 
 #### Get keywords 
 ```bash
-$ cargo info -k
+$ cargo get -k
 command-line-utilities
 development-tools::cargo-plugins
 ```
@@ -71,28 +71,28 @@ development-tools::cargo-plugins
 ```bash
 # Use one of Tab, CR, LF, CRLF or a custom string.
 
-$ cargo info -k --delimiter Tab
+$ cargo get -k --delimiter Tab
 command-line-utilities 	development-tools::cargo-plugins
 
-$ cargo info -k --delimiter=" -- "
+$ cargo get -k --delimiter=" -- "
 command-line-utilities -- development-tools::cargo-plugins
 
-$ cargo info -k --delimiter=";"
+$ cargo get -k --delimiter=";"
 command-line-utilities;development-tools::cargo-plugins
 ```
 
 #### Optional entry point 
 ```bash
 # Full path
-$ cargo info -n --root="../../some/other/project/Cargo.toml"
+$ cargo get -n --root="../../some/other/project/Cargo.toml"
 some-other-project
 
 # Directory
-$ cargo info -n --root="../../some/other/project"
+$ cargo get -n --root="../../some/other/project"
 some-other-project
 
 # Current directory
-$ cargo info -n
+$ cargo get -n
 current-project
 ```
 
