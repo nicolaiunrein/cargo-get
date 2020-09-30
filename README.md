@@ -80,8 +80,14 @@ command-line-utilities;development-tools::cargo-plugins
 
 #### Optional Path
 ```
-$ cargo info -v --path="../../some/other/project/Cargo.toml"
-0.1.0
+$ cargo info -n --path="../../some/other/project/Cargo.toml"
+some-other-project
+
+$ cargo info -n --path="../../some/other/project"
+some-other-project
+
+$ cargo info -n
+current-project
 
 ```
 
