@@ -67,6 +67,8 @@ development-tools::cargo-plugins
 
 #### Custom delimiter
 ```
+# Use one of Tab, CR, LF, CRLF or a custom string.
+
 $ cargo info -k --delimiter Tab
 command-line-utilities 	development-tools::cargo-plugins
 
@@ -80,12 +82,15 @@ command-line-utilities;development-tools::cargo-plugins
 
 #### Optional entry point 
 ```
+# Full path
 $ cargo info -n --root="../../some/other/project/Cargo.toml"
 some-other-project
 
+# Directory
 $ cargo info -n --root="../../some/other/project"
 some-other-project
 
+# Current directory
 $ cargo info -n
 current-project
 
