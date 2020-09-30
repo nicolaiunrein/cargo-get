@@ -1,6 +1,6 @@
 [package]
 name = "cargo-get"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["Nicolai Unrein <n.unrein@gmail.com>"]
 edition = "2018"
 description = "This extends Cargo to allow you to query your `Cargo.toml` files in a script-friendly way."
@@ -13,3 +13,4 @@ repository = "https://github.com/nicolaiunrein/cargo-get"
 [dependencies]
 cargo_toml = "0.8.1"
 clap = "3.0.0-beta.2"
+semver = "0.11.0"

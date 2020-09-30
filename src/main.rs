@@ -1,7 +1,7 @@
 mod delimiter;
 
 use cargo_toml::Manifest;
-use clap::{App, AppSettings, ArgGroup, ArgMatches};
+use clap::{App, AppSettings, Arg, ArgGroup, ArgMatches};
 use delimiter::Delimiter;
 use std::env;
 use std::error::Error;
@@ -51,7 +51,6 @@ pub fn make_app() -> App<'static> {
         .setting(AppSettings::NoAutoVersion)
         .author("Nicolai Unrein <info@auxcontrol.io>")
         .about("Query package info from Cargo.toml in a script-friendly way.")
-        .arg("-v --version                                      'get package version'")
         .arg("-a --authors                                      'get package authors'")
         .arg("-e --edition                                      'get package edition'")
         .arg("-n --name                                         'get package name'")
@@ -62,9 +61,14 @@ pub fn make_app() -> App<'static> {
         .arg("-d --description                                  'get package description'")
         .arg("-c --categories                                   'get package categories'")
         .arg("--root [Path]                                     'optional entry point'")
-        .arg("--delimiter [Tab | CR | LF | CRLF | String]       'specify delimiter for values'")
-        .group(ArgGroup::new("get").required(true).args(&[
-            "version",
+        .arg(
+            Arg::from(
+                "--delimiter [Tab | CR | LF | CRLF | String]       'specify delimiter for values'",
+            )
+            .global(true),
+        )
+        .group(ArgGroup::new("version-group").requires("version"))
+        .group(ArgGroup::new("get").required(false).args(&[
             "authors",
             "edition",
             "name",
@@ -75,6 +79,24 @@ pub fn make_app() -> App<'static> {
             "description",
             "categories",
         ]))
+        .subcommand(
+            App::new("version")
+                .setting(AppSettings::DisableVersion)
+                .setting(AppSettings::ArgRequiredElseHelp)
+                .setting(AppSettings::GlobalVersion)
+                .setting(AppSettings::DeriveDisplayOrder)
+                .setting(AppSettings::NoAutoVersion)
+                .about("get package version")
+                .arg(
+                    Arg::from("--full 'get full version'")
+                        .conflicts_with_all(&["major", "minor", "patch", "build", "pre"]),
+                )
+                .arg("--major                                   'get major part'")
+                .arg("--minor                                   'get minor part'")
+                .arg("--patch                                   'get patch part'")
+                .arg("--build                                   'get build part'")
+                .arg("--pre                                     'get pre-release part'"),
+        )
 }
 
 pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Error>> {
@@ -87,9 +109,40 @@ pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Er
 
     let delim_string = delimiter.to_string();
 
-    if matches.is_present("version") {
-        println!("{}", package.version);
-    } else if matches.is_present("name") {
+    if let Some(version) = matches.subcommand_matches("version") {
+        let mut out = Vec::new();
+        let v: semver::Version = package.version.parse().unwrap();
+
+        if version.is_present("full") {
+            println!("{}", v);
+            return Ok(());
+        }
+
+        if version.is_present("major") {
+            out.push(v.major.to_string());
+        }
+
+        if version.is_present("minor") {
+            out.push(v.minor.to_string());
+        }
+        if version.is_present("patch") {
+            out.push(v.patch.to_string())
+        }
+        if version.is_present("build") {
+            for b in v.build.into_iter() {
+                out.push(format!("{}", b))
+            }
+        }
+        if version.is_present("pre") {
+            for p in v.pre.into_iter() {
+                out.push(format!("{}", p))
+            }
+        }
+        println!("{}", out.join(&delim_string));
+        return Ok(());
+    }
+
+    if matches.is_present("name") {
         println!("{}", package.name);
     } else if matches.is_present("homepage") {
         println!("{}", package.homepage.unwrap_or_default());

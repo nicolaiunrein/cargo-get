@@ -1,5 +1,8 @@
 **Cargo plugin to easily query information from Cargo.toml file.**
 
+
+[![crates.io](https://img.shields.io/crates/v/cargo-get.svg)](https://crates.io/crates/cargo-edit)
+
 ### Overview
 This plugin helps querying information from a Cargo.toml file and can be used in shell scripts or CI/CD pipelines.
 The plugin accepts only one flag at a time and returns a single string with the requested value.
@@ -29,15 +32,14 @@ $ cargo install cargo-get
 #### All Options
 ```bash
 $ cargo get -h
-cargo-get 
+cargo-get
 Nicolai Unrein <info@auxcontrol.io>
 Query package info from Cargo.toml in a script-friendly way.
 
 USAGE:
-    cargo-get [OPTIONS] <--version|--authors|--edition|--name|--homepage|--keywords|--license|--links|--description|--categories>
+    cargo-get [FLAGS] [OPTIONS] [SUBCOMMAND]
 
 FLAGS:
-    -v, --version        get package version
     -a, --authors        get package authors
     -e, --edition        get package edition
     -n, --name           get package name
@@ -52,12 +54,26 @@ FLAGS:
 OPTIONS:
         --root <Path>                                  optional entry point
         --delimiter <Tab | CR | LF | CRLF | String>    specify delimiter for values
+
+SUBCOMMANDS:
+    version    get package version
+    help       Prints this message or the help of the given subcommand(s)
 ```
 
 #### Get Version
 ```bash
-$ cargo get -v
+$ cargo get version --full
 0.2.1
+
+$ cargo get version --major --minor --patch --pre 
+0
+2
+1
+alpha2
+
+$ cargo get version --major --minor --delimiter="."
+0.2
+
 ```
 
 #### Get keywords 
