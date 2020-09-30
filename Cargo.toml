@@ -6,6 +6,7 @@ edition = "2018"
 description = "This extends Cargo to allow you to query your `Cargo.toml` files in a script-friendly way."
 license = "Apache-2.0/MIT"
 categories = ["command-line-utilities", "config", "development-tools", "development-tools::cargo-plugins", "parsing"]
+keywords = ["cli", "cargo", "plugin", "query", "script", "command-line", "tools", "development", "dev-tools"]
 readme = "README.md"
 repository = "https://github.com/nicolaiunrein/cargo-info"
 
