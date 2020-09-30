@@ -1,7 +1,7 @@
 **Cargo plugin to easily query information from Cargo.toml file.**
 
 
-[![crates.io](https://img.shields.io/crates/v/cargo-get.svg)](https://crates.io/crates/cargo-edit)
+[![crates.io](https://img.shields.io/crates/v/cargo-get.svg)](https://crates.io/crates/cargo-get)
 
 ### Overview
 This plugin helps querying information from a Cargo.toml file and can be used in shell scripts or CI/CD pipelines.
