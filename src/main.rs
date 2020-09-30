@@ -1,13 +1,40 @@
-use clap::{App, AppSettings, ArgGroup};
+mod delimiter;
+
+use cargo_toml::Manifest;
+use clap::{App, AppSettings, ArgGroup, ArgMatches};
+use delimiter::Delimiter;
 use std::env;
+use std::error::Error;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
 
-type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+fn main() -> Result<(), Box<dyn Error>> {
+    let args = get_args();
+    let app = make_app();
 
-fn main() {
-    let info = App::new("info")
+    let matches = app.get_matches_from(args);
+
+    let current_dir = env::current_dir()?;
+    let path = search_manifest(&current_dir).ok_or_else(|| r#"No "Cargo.toml" found"#)?;
+    let manifest = Manifest::from_path(path)?;
+
+    output(&matches, manifest)
+}
+
+// Remove info argument in order to make it work with or without `info` subcommand
+fn get_args() -> Vec<String> {
+    let mut args: Vec<_> = std::env::args().collect();
+
+    if args.get(1) == Some(&"info".to_owned()) {
+        args.remove(1);
+    }
+
+    args
+}
+
+pub fn make_app() -> App<'static> {
+    App::new("Cargo Info")
         .setting(AppSettings::DisableVersion)
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::GlobalVersion)
@@ -25,6 +52,7 @@ fn main() {
         .arg("-i --links        'get package links'")
         .arg("-d --description  'get package description'")
         .arg("-c --categories   'get package categories'")
+        .arg("--delimiter [Tab | CR | LF | CRLF | String]       'specify delimiter for values'")
         .group(ArgGroup::new("info").required(true).args(&[
             "version",
             "authors",
@@ -36,17 +64,18 @@ fn main() {
             "links",
             "description",
             "categories",
-        ]));
+        ]))
+}
 
-    let app = App::new("Cargo Info").subcommand(info);
-    let matches = app.get_matches();
-    let matches = matches.subcommand_matches("info").unwrap();
+pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Error>> {
+    let package = manifest.package.ok_or_else(|| "Package not found")?;
 
-    let p = search_manifest(&env::current_dir().unwrap()).unwrap();
+    let delimiter: Delimiter = matches
+        .value_of("delimiter")
+        .map(|s| s.parse().unwrap())
+        .unwrap_or_default();
 
-    let manifest = cargo_toml::Manifest::from_path(p).unwrap();
-
-    let package = manifest.package.unwrap();
+    let delim_string = delimiter.to_string();
 
     if matches.is_present("version") {
         println!("{}", package.version);
@@ -58,22 +87,14 @@ fn main() {
         println!("{}", package.license.unwrap_or_default());
     } else if matches.is_present("description") {
         println!("{}", package.description.unwrap_or_default());
-    } else if matches.is_present("authors") {
-        for line in package.authors {
-            println!("{}", line);
-        }
     } else if matches.is_present("links") {
-        for line in package.links {
-            println!("{}", line);
-        }
+        println!("{}", package.links.unwrap_or_default());
+    } else if matches.is_present("authors") {
+        println!("{}", package.authors.join(&delim_string))
     } else if matches.is_present("keywords") {
-        for line in package.keywords {
-            println!("{}", line);
-        }
+        println!("{}", package.keywords.join(&delim_string))
     } else if matches.is_present("categories") {
-        for line in package.categories {
-            println!("{}", line);
-        }
+        println!("{}", package.categories.join(&delim_string))
     } else if matches.is_present("edition") {
         let edition = match package.edition {
             cargo_toml::Edition::E2015 => "2015",
@@ -81,14 +102,15 @@ fn main() {
         };
         println!("{}", edition);
     }
+    Ok(())
 }
 
-fn search_manifest(dir: &Path) -> Result<PathBuf> {
+fn search_manifest(dir: &Path) -> Option<PathBuf> {
     let manifest = dir.join("Cargo.toml");
 
     if fs::metadata(&manifest).is_ok() {
-        Ok(manifest)
+        Some(manifest)
     } else {
-        search_manifest(dir.parent().unwrap())
+        dir.parent().map(search_manifest).flatten()
     }
 }
