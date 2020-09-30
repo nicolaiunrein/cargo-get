@@ -1,4 +1,4 @@
-**Cargo plugin to easily query information from Cargo.toml file.**
+**Cargo plugin to easily query information from Cargo.toml files**
 
 
 [![crates.io](https://img.shields.io/crates/v/cargo-get.svg)](https://crates.io/crates/cargo-get)
