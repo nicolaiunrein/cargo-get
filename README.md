@@ -34,7 +34,7 @@ Nicolai Unrein <info@auxcontrol.io>
 Query package info from Cargo.toml in a script-friendly way.
 
 USAGE:
-    cargo info <--version|--authors|--edition|--name|--homepage|--keywords|--license|--links|--description|--categories>
+    cargo-info [OPTIONS] <--version|--authors|--edition|--name|--homepage|--keywords|--license|--links|--description|--categories>
 
 FLAGS:
     -v, --version        get package version
@@ -48,6 +48,10 @@ FLAGS:
     -d, --description    get package description
     -c, --categories     get package categories
     -h, --help           Prints help information
+
+OPTIONS:
+        --root <Path>                                  optional entry poin
+        --delimiter <Tab | CR | LF | CRLF | String>    specify delimiter for values
 ```
 
 #### Get Version
