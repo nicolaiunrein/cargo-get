@@ -15,7 +15,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let matches = app.get_matches_from(args);
 
-    let entry_point = match matches.value_of("path") {
+    let entry_point = match matches.value_of("root") {
         Some(p) => p.parse()?,
         None => env::current_dir()?,
     };
@@ -61,7 +61,7 @@ pub fn make_app() -> App<'static> {
         .arg("-i --links        'get package links'")
         .arg("-d --description  'get package description'")
         .arg("-c --categories   'get package categories'")
-        .arg("--path [Path]     'optional entry point")
+        .arg("--root [Path]     'optional entry point")
         .arg("--delimiter [Tab | CR | LF | CRLF | String]       'specify delimiter for values'")
         .group(ArgGroup::new("info").required(true).args(&[
             "version",
