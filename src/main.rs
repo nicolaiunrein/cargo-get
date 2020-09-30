@@ -15,15 +15,18 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let matches = app.get_matches_from(args);
 
-    let path = match matches.value_of("path") {
+    let entry_point = match matches.value_of("path") {
         Some(p) => p.parse()?,
-        None => {
-            let current_dir = env::current_dir()?;
-            search_manifest_path(&current_dir).ok_or_else(|| r#"No "Cargo.toml" found"#)?
-        }
+        None => env::current_dir()?,
     };
 
-    let manifest = Manifest::from_path(path)?;
+    let entry_point_absolute =
+        fs::canonicalize(&entry_point).map_err(|_| "No such file or directory")?;
+
+    let manifest_path =
+        search_manifest_path(&entry_point_absolute).ok_or_else(|| r#"No manifest found"#)?;
+
+    let manifest = Manifest::from_path(manifest_path)?;
 
     output(&matches, manifest)
 }
@@ -58,7 +61,7 @@ pub fn make_app() -> App<'static> {
         .arg("-i --links        'get package links'")
         .arg("-d --description  'get package description'")
         .arg("-c --categories   'get package categories'")
-        .arg("--path [Path]     'optional path to \"Cargo.toml\"")
+        .arg("--path [Path]     'optional entry point")
         .arg("--delimiter [Tab | CR | LF | CRLF | String]       'specify delimiter for values'")
         .group(ArgGroup::new("info").required(true).args(&[
             "version",
