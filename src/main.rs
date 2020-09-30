@@ -15,8 +15,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let matches = app.get_matches_from(args);
 
-    let current_dir = env::current_dir()?;
-    let path = search_manifest(&current_dir).ok_or_else(|| r#"No "Cargo.toml" found"#)?;
+    let path = match matches.value_of("path") {
+        Some(p) => p.parse()?,
+        None => {
+            let current_dir = env::current_dir()?;
+            search_manifest_path(&current_dir).ok_or_else(|| r#"No "Cargo.toml" found"#)?
+        }
+    };
+
     let manifest = Manifest::from_path(path)?;
 
     output(&matches, manifest)
@@ -52,6 +58,7 @@ pub fn make_app() -> App<'static> {
         .arg("-i --links        'get package links'")
         .arg("-d --description  'get package description'")
         .arg("-c --categories   'get package categories'")
+        .arg("--path [Path]     'optional path to \"Cargo.toml\"")
         .arg("--delimiter [Tab | CR | LF | CRLF | String]       'specify delimiter for values'")
         .group(ArgGroup::new("info").required(true).args(&[
             "version",
@@ -105,12 +112,12 @@ pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Er
     Ok(())
 }
 
-fn search_manifest(dir: &Path) -> Option<PathBuf> {
+fn search_manifest_path(dir: &Path) -> Option<PathBuf> {
     let manifest = dir.join("Cargo.toml");
 
     if fs::metadata(&manifest).is_ok() {
         Some(manifest)
     } else {
-        dir.parent().map(search_manifest).flatten()
+        dir.parent().map(search_manifest_path).flatten()
     }
 }
