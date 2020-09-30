@@ -29,7 +29,7 @@ $ cargo install cargo-get
 #### All Options
 ```bash
 $ cargo get -h
-Cargo Info
+cargo-get 
 Nicolai Unrein <info@auxcontrol.io>
 Query package info from Cargo.toml in a script-friendly way.
 

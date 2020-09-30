@@ -43,7 +43,7 @@ fn get_args() -> Vec<String> {
 }
 
 pub fn make_app() -> App<'static> {
-    App::new("Cargo Info")
+    App::new("cargo-get")
         .setting(AppSettings::DisableVersion)
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::GlobalVersion)
