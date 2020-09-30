@@ -27,7 +27,7 @@ $ cargo install cargo-info
 ### Examples
 
 #### All Options
-```
+```bash
 $ cargo info -h
 Cargo Info
 Nicolai Unrein <info@auxcontrol.io>
@@ -51,22 +51,20 @@ FLAGS:
 ```
 
 #### Get Version
-```
+```bash
 $ cargo info -v
 0.2.1
-
 ```
 
 #### Get keywords 
-```
+```bash
 $ cargo info -k
 command-line-utilities
 development-tools::cargo-plugins
-
 ```
 
 #### Custom delimiter
-```
+```bash
 # Use one of Tab, CR, LF, CRLF or a custom string.
 
 $ cargo info -k --delimiter Tab
@@ -77,11 +75,10 @@ command-line-utilities -- development-tools::cargo-plugins
 
 $ cargo info -k --delimiter=";"
 command-line-utilities;development-tools::cargo-plugins
-
 ```
 
 #### Optional entry point 
-```
+```bash
 # Full path
 $ cargo info -n --root="../../some/other/project/Cargo.toml"
 some-other-project
@@ -93,7 +90,6 @@ some-other-project
 # Current directory
 $ cargo info -n
 current-project
-
 ```
 
 
