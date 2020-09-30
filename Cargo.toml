@@ -1,6 +1,6 @@
 [package]
 name = "cargo-info"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Nicolai Unrein <n.unrein@gmail.com>"]
 edition = "2018"
 description = "This extends Cargo to allow you to query your `Cargo.toml` files in a script-friendly way."
