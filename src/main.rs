@@ -61,7 +61,7 @@ pub fn make_app() -> App<'static> {
         .arg("-i --links        'get package links'")
         .arg("-d --description  'get package description'")
         .arg("-c --categories   'get package categories'")
-        .arg("--root [Path]     'optional entry point")
+        .arg("--root [Path]     'optional entry point'")
         .arg("--delimiter [Tab | CR | LF | CRLF | String]       'specify delimiter for values'")
         .group(ArgGroup::new("info").required(true).args(&[
             "version",

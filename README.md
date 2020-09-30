@@ -50,7 +50,7 @@ FLAGS:
     -h, --help           Prints help information
 
 OPTIONS:
-        --root <Path>                                  optional entry poin
+        --root <Path>                                  optional entry point
         --delimiter <Tab | CR | LF | CRLF | String>    specify delimiter for values
 ```
 
