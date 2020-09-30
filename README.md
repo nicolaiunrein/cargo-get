@@ -80,12 +80,15 @@ command-line-utilities;development-tools::cargo-plugins
 
 #### Optional entry point 
 ```
+# Full path
 $ cargo info -n --root="../../some/other/project/Cargo.toml"
 some-other-project
 
+# Directory
 $ cargo info -n --root="../../some/other/project"
 some-other-project
 
+# Current directory
 $ cargo info -n
 current-project
 
