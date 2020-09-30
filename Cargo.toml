@@ -3,11 +3,11 @@ name = "cargo-info"
 version = "0.1.0"
 authors = ["Nicolai Unrein <n.unrein@gmail.com>"]
 edition = "2018"
-description = "Query package info from Cargo.toml in a script-friendly way."
-license = "MIT"
-categories = ["Cargo", "cli", "command-line-utilities", "development-tools::cargo-plugins"]
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "This extends Cargo to allow you to query your `Cargo.toml` files in a script-friendly way."
+license = "Apache-2.0/MIT"
+categories = ["command-line-utilities", "config", "development-tools", "development-tools::cargo-plugins", "parsing"]
+readme = "README.md"
+repository = "https://github.com/nicolaiunrein/cargo-info"
 
 [dependencies]
 cargo_toml = "0.8.1"
