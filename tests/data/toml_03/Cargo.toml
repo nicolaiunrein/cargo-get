@@ -1,11 +1,11 @@
 [package]
-name = "cargo-get"
-version = "0.2.1"
-authors = ["Nicolai Unrein <n.unrein@gmail.com>"]
+name = "test-name"
+version = "1.2.3-alpha-3"
+authors = ["John Doe<john-doe@abc.com>"]
 edition = "2018"
-description = "Cargo plugin to easily query information from Cargo.toml files"
+description = "A Very useful description"
 license = "Apache-2.0/MIT"
-categories = ["command-line-utilities", "config", "development-tools", "development-tools::cargo-plugins", "parsing"]
+categories = ["cli", "config"]
 keywords = ["binary", "cargo", "cli", "dev-tools", "query"]
 readme = "README.md"
 repository = "https://github.com/nicolaiunrein/cargo-get"
@@ -17,4 +17,3 @@ semver = "0.11.0"
 
 [dev-dependencies]
 assert_cmd = "1.0.1"
-predicates = "1.0.5"
