@@ -49,7 +49,7 @@ pub fn make_app() -> App<'static> {
         .setting(AppSettings::GlobalVersion)
         .setting(AppSettings::DeriveDisplayOrder)
         .setting(AppSettings::NoAutoVersion)
-        .author("Nicolai Unrein <info@auxcontrol.io>")
+        .author("Nicolai Unrein <n.unrein@gmail.com>")
         .about("Query package info from Cargo.toml in a script-friendly way.")
         .arg("-a --authors                                      'get package authors'")
         .arg("-e --edition                                      'get package edition'")
