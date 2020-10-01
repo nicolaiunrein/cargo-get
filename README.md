@@ -2,6 +2,7 @@
 
 
 [![crates.io](https://img.shields.io/crates/v/cargo-get.svg)](https://crates.io/crates/cargo-get)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/nicolaiunrein/cargo-get/CI)
 
 ### Overview
 This plugin helps querying information from a Cargo.toml file and can be used in shell scripts or CI/CD pipelines.
