@@ -82,14 +82,18 @@ pub fn make_app() -> App<'static> {
         .subcommand(
             App::new("version")
                 .setting(AppSettings::DisableVersion)
-                .setting(AppSettings::ArgRequiredElseHelp)
+                //.setting(AppSettings::ArgRequiredElseHelp)
                 .setting(AppSettings::GlobalVersion)
                 .setting(AppSettings::DeriveDisplayOrder)
                 .setting(AppSettings::NoAutoVersion)
                 .about("get package version")
                 .arg(
                     Arg::from("--full 'get full version'")
-                        .conflicts_with_all(&["major", "minor", "patch", "build", "pre"]),
+                        .conflicts_with_all(&["major", "minor", "patch", "build", "pre", "pretty"]),
+                )
+                .arg(
+                    Arg::from("--pretty 'get pretty version eg. v1.2.3'")
+                        .conflicts_with_all(&["major", "minor", "patch", "build", "pre", "full"]),
                 )
                 .arg("--major                                   'get major part'")
                 .arg("--minor                                   'get minor part'")
@@ -118,6 +122,11 @@ pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Er
             return Ok(());
         }
 
+        if version.is_present("pretty") {
+            println!("v{}", v);
+            return Ok(());
+        }
+
         if version.is_present("major") {
             out.push(v.major.to_string());
         }
@@ -129,14 +138,17 @@ pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Er
             out.push(v.patch.to_string())
         }
         if version.is_present("build") {
-            for b in v.build.into_iter() {
+            for b in v.build.iter() {
                 out.push(format!("{}", b))
             }
         }
         if version.is_present("pre") {
-            for p in v.pre.into_iter() {
+            for p in v.pre.iter() {
                 out.push(format!("{}", p))
             }
+        }
+        if out.is_empty() {
+            out.push(format!("{}", v));
         }
         println!("{}", out.join(&delim_string));
         return Ok(());

@@ -22,6 +22,19 @@ fn run_version_full() {
 }
 
 #[test]
+fn run_version_pretty() {
+    let mut cmd = Command::cargo_bin("cargo-get").unwrap();
+    let p = std::fs::canonicalize("tests/data/toml_01").unwrap();
+    cmd.current_dir(p);
+
+    cmd.arg("version")
+        .arg("--pretty")
+        .assert()
+        .success()
+        .stdout(predicate::eq(b"v1.2.3\n" as &[u8]));
+}
+
+#[test]
 fn run_version_major() {
     let mut cmd = Command::cargo_bin("cargo-get").unwrap();
     let p = std::fs::canonicalize("tests/data/toml_01").unwrap();

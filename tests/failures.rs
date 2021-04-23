@@ -19,3 +19,40 @@ fn run_no_manifest_found() {
         .failure()
         .stderr(predicate::eq(b"Error: \"No manifest found\"\n" as &[u8]));
 }
+
+#[test]
+fn run_version_pretty_minor_conflict() {
+    let mut cmd = Command::cargo_bin("cargo-get").unwrap();
+    let p = std::fs::canonicalize("tests/data/toml_01").unwrap();
+    cmd.current_dir(p);
+
+    cmd.arg("version")
+        .arg("--pretty")
+        .arg("--minor")
+        .assert()
+        .failure();
+}
+#[test]
+fn run_version_pretty_full_conflict() {
+    let mut cmd = Command::cargo_bin("cargo-get").unwrap();
+    let p = std::fs::canonicalize("tests/data/toml_01").unwrap();
+    cmd.current_dir(p);
+
+    cmd.arg("version")
+        .arg("--pretty")
+        .arg("--full")
+        .assert()
+        .failure();
+}
+#[test]
+fn run_version_full_minor_conflict() {
+    let mut cmd = Command::cargo_bin("cargo-get").unwrap();
+    let p = std::fs::canonicalize("tests/data/toml_01").unwrap();
+    cmd.current_dir(p);
+
+    cmd.arg("version")
+        .arg("--full")
+        .arg("--minor")
+        .assert()
+        .failure();
+}
