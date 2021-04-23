@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         fs::canonicalize(&entry_point).map_err(|_| "No such file or directory")?;
 
     let manifest_path =
-        search_manifest_path(&entry_point_absolute).ok_or_else(|| r#"No manifest found"#)?;
+        search_manifest_path(&entry_point_absolute).ok_or(r#"No manifest found"#)?;
 
     let manifest = Manifest::from_path(manifest_path)?;
 
@@ -82,14 +82,14 @@ pub fn make_app() -> App<'static> {
         .subcommand(
             App::new("version")
                 .setting(AppSettings::DisableVersion)
-                //.setting(AppSettings::ArgRequiredElseHelp)
                 .setting(AppSettings::GlobalVersion)
                 .setting(AppSettings::DeriveDisplayOrder)
                 .setting(AppSettings::NoAutoVersion)
                 .about("get package version")
                 .arg(
                     Arg::from("--full 'get full version'")
-                        .conflicts_with_all(&["major", "minor", "patch", "build", "pre", "pretty"]),
+                        .conflicts_with_all(&["major", "minor", "patch", "build", "pre", "pretty"])
+                        .hidden(true),
                 )
                 .arg(
                     Arg::from("--pretty 'get pretty version eg. v1.2.3'")
@@ -104,7 +104,7 @@ pub fn make_app() -> App<'static> {
 }
 
 pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Error>> {
-    let package = manifest.package.ok_or_else(|| "Package not found")?;
+    let package = manifest.package.ok_or("Package not found")?;
 
     let delimiter: Delimiter = matches
         .value_of("delimiter")
@@ -134,9 +134,11 @@ pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Er
         if version.is_present("minor") {
             out.push(v.minor.to_string());
         }
+
         if version.is_present("patch") {
             out.push(v.patch.to_string())
         }
+
         if version.is_present("build") {
             for b in v.build.iter() {
                 out.push(format!("{}", b))

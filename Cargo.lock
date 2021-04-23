@@ -69,7 +69,7 @@ checksum = "08c48aae112d48ed9f069b33538ea9e3e90aa263cfa3d1c24309612b1f7472de"
 
 [[package]]
 name = "cargo-get"
-version = "0.2.2"
+version = "0.3.1"
 dependencies = [
  "assert_cmd",
  "cargo_toml",
