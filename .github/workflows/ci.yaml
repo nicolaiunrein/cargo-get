@@ -7,6 +7,17 @@ on:
     branches: master
 
 jobs:
+  install:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        rust: [stable]
+
+    steps:
+    - name: Install
+      run: cargo install cargo-get
+
   build:
     runs-on: ${{ matrix.os }}
     strategy:
