@@ -1,6 +1,6 @@
 [package]
 name = "cargo-get"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["Nicolai Unrein <n.unrein@gmail.com>"]
 edition = "2018"
 description = "Cargo plugin to easily query information from Cargo.toml files"
@@ -13,7 +13,7 @@ include = ["src/**/*", "README.md"]
 
 [dependencies]
 cargo_toml = "0.8.1"
-clap = { version = "3.0.0-beta.2", default-features = false, features = ["std"] }
+clap = "2.3.33"
 semver = "0.11.0"
 
 [dev-dependencies]

@@ -42,33 +42,84 @@ fn get_args() -> Vec<String> {
     args
 }
 
-pub fn make_app() -> App<'static> {
+pub fn make_app() -> App<'static, 'static> {
     App::new("cargo-get")
         .setting(AppSettings::DisableVersion)
         .setting(AppSettings::ArgRequiredElseHelp)
         .setting(AppSettings::GlobalVersion)
         .setting(AppSettings::DeriveDisplayOrder)
-        .setting(AppSettings::NoAutoVersion)
+        .setting(AppSettings::VersionlessSubcommands)
         .author("Nicolai Unrein <n.unrein@gmail.com>")
         .about("Query package info from Cargo.toml in a script-friendly way.")
-        .arg("-a --authors                                      'get package authors'")
-        .arg("-e --edition                                      'get package edition'")
-        .arg("-n --name                                         'get package name'")
-        .arg("-o --homepage                                     'get package homepage'")
-        .arg("-k --keywords                                     'get package keywords'")
-        .arg("-l --license                                      'get package license'")
-        .arg("-i --links                                        'get package links'")
-        .arg("-d --description                                  'get package description'")
-        .arg("-c --categories                                   'get package categories'")
-        .arg("--root [Path]                                     'optional entry point'")
         .arg(
-            Arg::from(
-                "--delimiter [Tab | CR | LF | CRLF | String]       'specify delimiter for values'",
-            )
-            .global(true),
+            Arg::with_name("authors")
+                .long("authors")
+                .short("a")
+                .help("get package authors"),
         )
-        .group(ArgGroup::new("version-group").requires("version"))
-        .group(ArgGroup::new("get").required(false).args(&[
+        .arg(
+            Arg::with_name("edition")
+                .long("edition")
+                .short("e")
+                .help("get package edition"),
+        )
+        .arg(
+            Arg::with_name("name")
+                .long("name")
+                .short("n")
+                .help("get package name"),
+        )
+        .arg(
+            Arg::with_name("homepage")
+                .long("homepage")
+                .short("o")
+                .help("get package homepage"),
+        )
+        .arg(
+            Arg::with_name("keywords")
+                .long("keywords")
+                .short("k")
+                .help("get package keywords"),
+        )
+        .arg(
+            Arg::with_name("license")
+                .long("license")
+                .short("l")
+                .help("get package license"),
+        )
+        .arg(
+            Arg::with_name("links")
+                .long("links")
+                .short("i")
+                .help("get package links"),
+        )
+        .arg(
+            Arg::with_name("description")
+                .long("description")
+                .short("d")
+                .help("get package description"),
+        )
+        .arg(
+            Arg::with_name("categories")
+                .long("categories")
+                .short("c")
+                .help("get package categories"),
+        )
+        .arg(
+            Arg::with_name("root")
+                .long("root")
+                .help("optional entry point")
+                .value_name("PATH"),
+        )
+        .arg(
+            Arg::with_name("delimiter")
+                .long("delimiter")
+                .help("specify delimiter for values")
+                .value_name("Tab | CR | LF | CRLF | String")
+                .global(true),
+        )
+        .group(ArgGroup::with_name("version-group").requires("version"))
+        .group(ArgGroup::with_name("get").required(false).args(&[
             "authors",
             "edition",
             "name",
@@ -84,22 +135,30 @@ pub fn make_app() -> App<'static> {
                 .setting(AppSettings::DisableVersion)
                 .setting(AppSettings::GlobalVersion)
                 .setting(AppSettings::DeriveDisplayOrder)
-                .setting(AppSettings::NoAutoVersion)
+                .setting(AppSettings::VersionlessSubcommands)
                 .about("get package version")
                 .arg(
-                    Arg::from("--full 'get full version'")
+                    Arg::with_name("full")
+                        .long("full")
+                        .help("get full version")
                         .conflicts_with_all(&["major", "minor", "patch", "build", "pre", "pretty"])
                         .hidden(true),
                 )
                 .arg(
-                    Arg::from("--pretty 'get pretty version eg. v1.2.3'")
+                    Arg::with_name("pretty")
+                        .long("pretty")
+                        .help("get pretty version eg. v1.2.3")
                         .conflicts_with_all(&["major", "minor", "patch", "build", "pre", "full"]),
                 )
-                .arg("--major                                   'get major part'")
-                .arg("--minor                                   'get minor part'")
-                .arg("--patch                                   'get patch part'")
-                .arg("--build                                   'get build part'")
-                .arg("--pre                                     'get pre-release part'"),
+                .arg(Arg::with_name("major").long("major").help("get major part"))
+                .arg(Arg::with_name("minor").long("minor").help("get minor part"))
+                .arg(Arg::with_name("patch").long("patch").help("get patch part"))
+                .arg(Arg::with_name("build").long("build").help("get build part"))
+                .arg(
+                    Arg::with_name("pre")
+                        .long("pre")
+                        .help("get pre-release part"),
+                ),
         )
 }
 
