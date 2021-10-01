@@ -155,6 +155,16 @@ fn run_categories_multiple() {
 }
 
 #[test]
+fn run_edition_2021() {
+    let mut cmd = Command::cargo_bin("cargo-get").unwrap();
+    let p = std::fs::canonicalize("tests/data/toml_03").unwrap();
+    cmd.current_dir(p);
+
+    let assert = cmd.arg("--edition").assert();
+    assert.success().stdout(predicate::eq(b"2021\n" as &[u8]));
+}
+
+#[test]
 fn run_edition_2018() {
     let mut cmd = Command::cargo_bin("cargo-get").unwrap();
     let p = std::fs::canonicalize("tests/data/toml_01").unwrap();

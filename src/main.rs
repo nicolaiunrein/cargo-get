@@ -235,6 +235,7 @@ pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Er
         let edition = match package.edition {
             cargo_toml::Edition::E2015 => "2015",
             cargo_toml::Edition::E2018 => "2018",
+            cargo_toml::Edition::E2021 => "2021",
         };
         println!("{}", edition);
     }
