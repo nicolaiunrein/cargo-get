@@ -1,0 +1,27 @@
+name: github-actions
+
+on:
+  push:
+    # branches: master
+    branches: main
+
+  pull_request:
+    branches: main
+
+jobs:
+  actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Get package name
+        id: cargo-get
+        # uses: nicolaiunrein/cargo-get@master
+        uses: meysam81/cargo-get@master
+        with:
+          flags: --name
+      - name: Get package author
+        id: cargo-get
+        uses: meysam81/cargo-get@master
+        with:
+          flags: --author
