@@ -1,0 +1,32 @@
+name: cargo-get
+author: n.unrein@gmail.com
+branding:
+  color: red
+  icon: upload
+description: Get cargo package metadata
+inputs:
+  flags:
+    description: "Flags to pass to cargo get (default: package name)"
+    required: false
+    default: --name
+  options:
+    description: "Options to pass to cargo get"
+    required: false
+    default: ""
+  subcommand:
+    description: "Subcommand to run"
+    required: false
+    default: ""
+outputs:
+  metadata:
+    description: "Cargo package metadata"
+    value: ${{ steps.cargo-get.outputs.metadata }}
+runs:
+  using: composite
+  steps:
+    - id: cargo-get
+      name: Cargo get metadata
+      run: |
+        metadata=$(cargo get ${{ inputs.flags }} ${{ inputs.options }} ${{ inputs.subcommand }})
+        echo "metadata=$metadata" >> $GITHUB_OUTPUT
+      shell: bash
