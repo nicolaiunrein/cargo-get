@@ -2,6 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/cargo-get.svg)](https://crates.io/crates/cargo-get)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/nicolaiunrein/cargo-get/CI)
+[![build-binary](https://github.com/meysam81/cargo-get/actions/workflows/build-binary.yml/badge.svg)](https://github.com/nicolaiunrein/cargo-get/releases/latest)
 
 ### Overview
 
