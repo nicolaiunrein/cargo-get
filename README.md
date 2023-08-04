@@ -21,6 +21,17 @@ cargo-get uses rustfmt for formatting and clippy for linting.
 
 ### Installation
 
+### Pre-built Binaries
+
+Download the latest release from the following link:
+
+<https://github.com/nicolaiunrein/cargo-get/releases/latest>
+
+Place the binary in your `$PATH` and rename it to `cargo-get`.
+
+
+### Cargo
+
 Ensure that you have a fairly recent version of rust/cargo installed.
 
 ```
