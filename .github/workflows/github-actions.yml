@@ -17,11 +17,11 @@ jobs:
       - name: Get package name
         id: cargo-name
         # uses: nicolaiunrein/cargo-get@master
-        uses: meysam81/cargo-get@master
+        uses: meysam81/cargo-get@main
         with:
           flags: --name
       - name: Get package author
         id: cargo-author
-        uses: meysam81/cargo-get@master
+        uses: meysam81/cargo-get@main
         with:
           flags: --author
