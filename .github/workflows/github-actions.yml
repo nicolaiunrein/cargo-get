@@ -15,13 +15,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
       - name: Get package name
-        id: cargo-get
+        id: cargo-name
         # uses: nicolaiunrein/cargo-get@master
         uses: meysam81/cargo-get@master
         with:
           flags: --name
       - name: Get package author
-        id: cargo-get
+        id: cargo-author
         uses: meysam81/cargo-get@master
         with:
           flags: --author
