@@ -24,6 +24,10 @@ outputs:
 runs:
   using: composite
   steps:
+    - name: Install cargo-get
+      run: |
+        cargo install cargo-get
+      shell: bash
     - id: cargo-get
       name: Cargo get metadata
       run: |
