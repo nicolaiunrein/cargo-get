@@ -111,6 +111,7 @@ jobs:
           echo "package-name=${package_name}" >> $GITHUB_OUTPUT
       - name: Rename binary
         run: |
+          mkdir target/${{ matrix.target }}/release
           cp target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}.exe target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}.exe
       - name: Checksum
         run: |
