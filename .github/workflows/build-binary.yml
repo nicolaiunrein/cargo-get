@@ -107,7 +107,7 @@ jobs:
         name: Cargo package name
         run: |
           cargo install cargo-get
-          package_name=$(cargo get --name)
+          $package_name = cargo get --name
           echo "package-name=${package_name}" >> $GITHUB_OUTPUT
       - name: Rename binary
         run: |
