@@ -1,0 +1,36 @@
+name: github-actions
+
+on:
+  push:
+    branches: master
+
+  pull_request:
+    branches: master
+
+jobs:
+  actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Get package name
+        id: cargo-name
+        uses: nicolaiunrein/cargo-get@master
+        with:
+          flags: --name
+      - name: Get package name with root
+        id: cargo-name-root
+        uses: nicolaiunrein/cargo-get@master
+        with:
+          flags: --name
+          options: --root .
+      - name: Get package version
+        id: cargo-version
+        uses: nicolaiunrein/cargo-get@master
+        with:
+          subcommand: version
+      - name: Get package author
+        id: cargo-author
+        uses: nicolaiunrein/cargo-get@master
+        with:
+          flags: --authors

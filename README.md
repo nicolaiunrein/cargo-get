@@ -138,4 +138,26 @@ $ cargo get -n
 current-project
 ```
 
+### GitHub Actions
+
+#### Package name
+
+```yaml
+      - name: Get package name
+        id: cargo-get
+        uses: nicolaiunrein/cargo-get@master
+        with:
+          flags: --name
+```
+
+#### Package author
+
+```yaml
+      - name: Get package author
+        id: cargo-get
+        uses: nicolaiunrein/cargo-get@master
+        with:
+          flags: --author
+```
+
 [release]: https://github.com/nicolaiunrein/cargo-get/releases/latest
