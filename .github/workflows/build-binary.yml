@@ -78,57 +78,5 @@ jobs:
           files: |
             target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}
             target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}.sha256
-  windows:
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        include:
-          - target: x86_64-pc-windows-msvc
-          - target: x86_64-pc-windows-gnu
-      fail-fast: false
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Cache cargo
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      - name: Install Rust stable
-        run: |
-          rustup toolchain install stable --target ${{ matrix.target }}
-      - name: Build
-        run: |
-          cargo build --release --target ${{ matrix.target }}
-      - id: package-name
-        name: Cargo package name
-        run: |
-          cargo install cargo-get
-          $package_name = cargo get --name
-          echo "package-name=${package_name}" >> $GITHUB_OUTPUT
-      - name: Rename binary
-        run: |
-          mkdir target/${{ matrix.target }}/release
-          cp target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}.exe target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}.exe
-      - name: Checksum
-        run: |
-          cd target/${{ matrix.target }}/release
-          sha256sum ${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}.exe > ${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}.exe.sha256
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}
-          path: |
-            target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}.exe
-            target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}.exe.sha256
-          if-no-files-found: error
-      - if: github.event_name == 'release' && github.event.action == 'published'
-        name: Upload assets
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}.exe
-            target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}.exe.sha256
+  # TODO: windows
+  
