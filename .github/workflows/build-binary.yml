@@ -29,7 +29,7 @@ jobs:
           - image: macos-latest
             target: x86_64-apple-darwin
           - image: ubuntu-latest
-            target: x86_64-windows-gnu
+            target: x86_64-pc-windows-gnu
       fail-fast: false
     steps:
       - name: Checkout
