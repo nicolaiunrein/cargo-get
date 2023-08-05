@@ -57,33 +57,32 @@ jobs:
       - name: Build
         run: |
           cargo build --release --target ${{ matrix.target }}
-      - id: package-name
-        name: Cargo package name
-        run: |
-          cargo install cargo-get
-          package_name=$(cargo get --name)
-          echo "package-name=${package_name}" >> $GITHUB_OUTPUT
+      - name: Get package name
+        id: package-name
+        uses: nicolaiunrein/cargo-get@master
+        with:
+          flags: --name
       - name: Rename binary
         run: |
           tree
-          cp target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }} target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}
+          cp target/${{ matrix.target }}/release/${{ steps.package-name.outputs.metadata }} target/${{ matrix.target }}/release/${{ steps.package-name.outputs.metadata }}-${{ matrix.target }}
       - name: Checksum
         run: |
           cd target/${{ matrix.target }}/release
-          sha256sum ${{ steps.package-name.outputs.package-name }}-${{ matrix.target }} > ${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}.sha256
+          sha256sum ${{ steps.package-name.outputs.metadata }}-${{ matrix.target }} > ${{ steps.package-name.outputs.metadata }}-${{ matrix.target }}.sha256
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}
+          name: ${{ steps.package-name.outputs.metadata }}-${{ matrix.target }}
           path: |
-            target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}
-            target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}.sha256
+            target/${{ matrix.target }}/release/${{ steps.package-name.outputs.metadata }}-${{ matrix.target }}
+            target/${{ matrix.target }}/release/${{ steps.package-name.outputs.metadata }}-${{ matrix.target }}.sha256
           if-no-files-found: error
       - if: github.event_name == 'release' && github.event.action == 'published'
         name: Upload assets
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}
-            target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}.sha256
+            target/${{ matrix.target }}/release/${{ steps.package-name.outputs.metadata }}-${{ matrix.target }}
+            target/${{ matrix.target }}/release/${{ steps.package-name.outputs.metadata }}-${{ matrix.target }}.sha256
   
