@@ -21,7 +21,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     };
 
     let entry_point_absolute =
-        fs::canonicalize(&entry_point).map_err(|_| "No such file or directory")?;
+        fs::canonicalize(entry_point).map_err(|_| "No such file or directory")?;
 
     let manifest_path =
         search_manifest_path(&entry_point_absolute).ok_or(r#"No manifest found"#)?;
@@ -248,6 +248,6 @@ fn search_manifest_path(dir: &Path) -> Option<PathBuf> {
     if fs::metadata(&manifest).is_ok() {
         Some(manifest)
     } else {
-        dir.parent().map(search_manifest_path).flatten()
+        dir.parent().and_then(search_manifest_path)
     }
 }
