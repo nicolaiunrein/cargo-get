@@ -45,6 +45,11 @@ jobs:
       - name: Install Rust stable
         run: |
           rustup toolchain install stable --target ${{ matrix.target }}
+      - if: contains(matrix.target, 'windows')
+        name: Install Windows dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y gcc-mingw-w64
       - if: contains(matrix.target, 'apple')
         name: Install Apple dependencies
         run: |
