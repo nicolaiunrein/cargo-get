@@ -19,7 +19,7 @@ permissions:
   contents: write
 
 jobs:
-  unix:
+  build:
     runs-on: ${{ matrix.image }}
     strategy:
       matrix:
