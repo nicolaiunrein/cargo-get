@@ -28,6 +28,8 @@ jobs:
             target: x86_64-unknown-linux-gnu
           - image: macos-latest
             target: x86_64-apple-darwin
+          - image: ubuntu-latest
+            target: x86_64-windows-gnu
       fail-fast: false
     steps:
       - name: Checkout
@@ -78,5 +80,4 @@ jobs:
           files: |
             target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}
             target/${{ matrix.target }}/release/${{ steps.package-name.outputs.package-name }}-${{ matrix.target }}.sha256
-  # TODO: windows
   
