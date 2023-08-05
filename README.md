@@ -24,11 +24,9 @@ cargo-get uses rustfmt for formatting and clippy for linting.
 
 ### Pre-built Binaries
 
-Download the latest release from the following link:
-
-<https://github.com/nicolaiunrein/cargo-get/releases/latest>
-
-Place the binary in your `~/.cargo/bin/` and rename it to `cargo-get`.
+1. Download the binary for your CPU architecture from the [GitHub latest release][release].
+2. Make the binary executable using `chmod +x`
+3. Place the binary in your `$PATH` and rename it to `cargo-get`.
 
 
 ### Cargo
@@ -139,3 +137,5 @@ some-other-project
 $ cargo get -n
 current-project
 ```
+
+[release]: https://github.com/nicolaiunrein/cargo-get/releases/latest
