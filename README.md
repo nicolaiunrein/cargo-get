@@ -2,6 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/cargo-get.svg)](https://crates.io/crates/cargo-get)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/nicolaiunrein/cargo-get/CI)
+[![build-binary](https://github.com/nicolaiunrein/cargo-get/actions/workflows/build-binary.yml/badge.svg)](https://github.com/nicolaiunrein/cargo-get/releases/latest)
 
 ### Overview
 
@@ -20,6 +21,15 @@ To help us help you get pull requests merged quickly and smoothly, open an issue
 cargo-get uses rustfmt for formatting and clippy for linting.
 
 ### Installation
+
+### Pre-built Binaries
+
+1. Download the binary for your CPU architecture from the [GitHub latest release][release].
+2. Make the binary executable using `chmod +x`
+3. Place the binary in your `$PATH` and rename it to `cargo-get`.
+
+
+### Cargo
 
 Ensure that you have a fairly recent version of rust/cargo installed.
 
@@ -149,3 +159,5 @@ current-project
         with:
           flags: --author
 ```
+
+[release]: https://github.com/nicolaiunrein/cargo-get/releases/latest
