@@ -43,6 +43,7 @@ runs:
       run: |
         current_target=$(rustc -Vv | grep host | cut -d ' ' -f 2)
         echo $current_target
+        command -v curl grep cut tr
         download_link=$(curl -s https://api.github.com/repos/nicolaiunrein/cargo-get/releases/latest | grep x86_64-apple-darwin\" | grep browser_download_url | cut -d: -f2,3 | tr -d '\"\ ')
         echo $download_link
         mkdir -p ~/.cargo/bin/
