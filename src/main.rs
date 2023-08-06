@@ -1,13 +1,20 @@
 mod delimiter;
+mod error;
+mod version;
 
 use cargo_toml::Manifest;
 use clap::{App, AppSettings, Arg, ArgGroup, ArgMatches};
 use delimiter::Delimiter;
+use error::InheritanceError;
+use error::InvalidSemver;
+use error::NotFound;
 use std::env;
 use std::error::Error;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
+
+use crate::version::match_version;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = get_args();
@@ -193,25 +200,42 @@ pub fn make_app() -> App<'static, 'static> {
         .subcommand(App::new("workspace.package.homepage").about("get workspace template homepage"))
         .subcommand(App::new("workspace.package.keywords").about("get workspace template keywords"))
         .subcommand(App::new("workspace.package.license").about("get workspace template license"))
-        .subcommand(App::new("workspace.package.version").about("get workspace template version"))
-}
-
-#[derive(Debug)]
-pub struct InheritanceError(&'static str);
-impl std::fmt::Display for InheritanceError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "The property {:?} is inherited from the workspace parent!",
-            self.0
+        .subcommand(
+            App::new("workspace.package.version")
+                .setting(AppSettings::DisableVersion)
+                .setting(AppSettings::GlobalVersion)
+                .setting(AppSettings::DeriveDisplayOrder)
+                .setting(AppSettings::VersionlessSubcommands)
+                .about("get workspace template version")
+                .arg(
+                    Arg::with_name("full")
+                        .long("full")
+                        .help("get full version")
+                        .conflicts_with_all(&["major", "minor", "patch", "build", "pre", "pretty"])
+                        .hidden(true),
+                )
+                .arg(
+                    Arg::with_name("pretty")
+                        .long("pretty")
+                        .help("get pretty version eg. v1.2.3")
+                        .conflicts_with_all(&["major", "minor", "patch", "build", "pre", "full"]),
+                )
+                .arg(Arg::with_name("major").long("major").help("get major part"))
+                .arg(Arg::with_name("minor").long("minor").help("get minor part"))
+                .arg(Arg::with_name("patch").long("patch").help("get patch part"))
+                .arg(Arg::with_name("build").long("build").help("get build part"))
+                .arg(
+                    Arg::with_name("pre")
+                        .long("pre")
+                        .help("get pre-release part"),
+                ),
         )
-    }
 }
-
-impl Error for InheritanceError {}
 
 pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Error>> {
-    let package = manifest.package.clone().ok_or("Package not found")?;
+    let package = || manifest.package.clone().ok_or(NotFound("package"));
+    let workspace = || manifest.workspace.clone().ok_or(NotFound("workspace"));
+    let ws_package = || workspace().and_then(|ws| ws.package.ok_or(NotFound("workspace.package")));
 
     let delimiter: Delimiter = matches
         .value_of("delimiter")
@@ -221,59 +245,22 @@ pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Er
     let delim_string = delimiter.to_string();
 
     if let Some(version) = matches.subcommand_matches("package.version") {
-        let mut out = Vec::new();
-        let v: semver::Version = package
+        let v: semver::Version = package()?
             .version
             .get()
             .or(Err(InheritanceError("package.version")))?
             .parse()
-            .unwrap();
+            .map_err(InvalidSemver)?;
 
-        if version.is_present("full") {
-            println!("{}", v);
-            return Ok(());
-        }
-
-        if version.is_present("pretty") {
-            println!("v{}", v);
-            return Ok(());
-        }
-
-        if version.is_present("major") {
-            out.push(v.major.to_string());
-        }
-
-        if version.is_present("minor") {
-            out.push(v.minor.to_string());
-        }
-
-        if version.is_present("patch") {
-            out.push(v.patch.to_string())
-        }
-
-        if version.is_present("build") {
-            for b in v.build.iter() {
-                out.push(format!("{}", b))
-            }
-        }
-        if version.is_present("pre") {
-            for p in v.pre.iter() {
-                out.push(format!("{}", p))
-            }
-        }
-        if out.is_empty() {
-            out.push(format!("{}", v));
-        }
-        println!("{}", out.join(&delim_string));
-        return Ok(());
+        match_version(version, v, &delimiter)?;
     }
 
     if matches.is_present("name") {
-        println!("{}", package.name);
+        println!("{}", package()?.name);
     } else if matches.is_present("homepage") {
         println!(
             "{}",
-            package
+            package()?
                 .homepage
                 .unwrap_or_default()
                 .get()
@@ -282,7 +269,7 @@ pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Er
     } else if matches.is_present("license") {
         println!(
             "{}",
-            package
+            package()?
                 .license
                 .unwrap_or_default()
                 .get()
@@ -291,18 +278,18 @@ pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Er
     } else if matches.is_present("description") {
         println!(
             "{}",
-            package
+            package()?
                 .description
                 .unwrap_or_default()
                 .get()
                 .or(Err(InheritanceError("package.description")))?
         );
     } else if matches.is_present("links") {
-        println!("{}", package.links.unwrap_or_default());
+        println!("{}", package()?.links.unwrap_or_default());
     } else if matches.is_present("authors") {
         println!(
             "{}",
-            package
+            package()?
                 .authors
                 .get()
                 .or(Err(InheritanceError("package.authors")))?
@@ -311,33 +298,42 @@ pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Er
     } else if matches.is_present("keywords") {
         println!(
             "{}",
-            package
+            package()?
                 .keywords
                 .get()
-                .or(Err(InheritanceError("package.authors")))?
+                .or(Err(InheritanceError("package.keywords")))?
                 .join(&delim_string)
         )
     } else if matches.is_present("categories") {
         println!(
             "{}",
-            package
+            package()?
                 .categories
                 .get()
-                .or(Err(InheritanceError("package.authors")))?
+                .or(Err(InheritanceError("package.categories")))?
                 .join(&delim_string)
         )
     } else if matches.is_present("edition") {
-        let edition = match package
+        let edition = match package()?
             .edition
             .get()
-            .or(Err(InheritanceError("package.authors")))?
+            .or(Err(InheritanceError("package.edition")))?
         {
             cargo_toml::Edition::E2015 => "2015",
             cargo_toml::Edition::E2018 => "2018",
             cargo_toml::Edition::E2021 => "2021",
         };
         println!("{}", edition);
+    } else if let Some(version) = matches.subcommand_matches("workspace.package.version") {
+        let v: semver::Version = ws_package()?
+            .version
+            .ok_or(NotFound("workspace.package.version"))?
+            .parse()
+            .map_err(InvalidSemver)?;
+
+        match_version(version, v, &delimiter)?;
     }
+
     Ok(())
 }
 
