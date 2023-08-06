@@ -15,22 +15,24 @@ jobs:
         uses: actions/checkout@master
       - name: Get package name
         id: cargo-name
-        uses: nicolaiunrein/cargo-get@master
+        uses: meysam81/cargo-get@master
         with:
           flags: --name
       - name: Get package name with root
-        id: cargo-name-root
-        uses: nicolaiunrein/cargo-get@master
+        uses: meysam81/cargo-get@master
         with:
           flags: --name
           options: --root .
-      - name: Get package version
-        id: cargo-version
-        uses: nicolaiunrein/cargo-get@master
+      - name: Get cargo-get version
+        uses: meysam81/cargo-get@master
         with:
           subcommand: version
       - name: Get package author
         id: cargo-author
-        uses: nicolaiunrein/cargo-get@master
+        uses: meysam81/cargo-get@master
         with:
           flags: --authors
+      - name: Print package metadata
+        run: |
+          echo "Package name: ${{ steps.cargo-name.outputs.stdout }}"
+          echo "Package author: ${{ steps.cargo-author.outputs.stdout }}"
