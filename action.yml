@@ -24,7 +24,7 @@ outputs:
 runs:
   using: composite
   steps:
-    - if: steps.cache.outputs.cache-hit != 'true' && runner.os == 'Linux'
+    - if: runner.os == 'Linux'
       name: Install cargo-get
       run: |
         current_target=$(rustc -Vv | grep host | cut -d ' ' -f 2)
@@ -33,7 +33,7 @@ runs:
         curl -sSfLo ~/.cargo/bin/cargo-get "$download_link"
         chmod +x ~/.cargo/bin/cargo-get
       shell: bash
-    - if: steps.cache.outputs.cache-hit != 'true' && runner.os == 'macOS'
+    - if: runner.os == 'macOS'
       name: Install cargo-get
       run: |
         current_target=$(rustc -Vv | grep host | cut -d ' ' -f 2)
