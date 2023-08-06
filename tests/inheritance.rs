@@ -22,8 +22,8 @@ fn workspace_version() {
     cmd.current_dir(p);
 
     cmd.arg("workspace.package.version")
-        .arg("--full")
+        .arg("--pretty")
         .assert()
         .success()
-        .stdout(predicate::eq(b"1.2.3\n" as &[u8]));
+        .stdout(predicate::eq(b"v1.2.3\n" as &[u8]));
 }
