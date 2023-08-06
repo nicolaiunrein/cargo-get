@@ -24,9 +24,19 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Install cargo-get
+    - name: Cache installed binary
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/bin/cargo-get
+        key: ${{ runner.os }}-cargo-get
+    - if: steps.cache.outputs.cache-hit != 'true'
+      name: Install cargo-get
       run: |
-        cargo install cargo-get
+        current_target=$(rustc -Vv | grep host | cut -d ' ' -f 2)
+        download_link=$(curl -s https://api.github.com/repos/nicolaiunrein/cargo-get/releases/latest | grep x86_64-unknown-linux-musl\" | grep browser_download_url | cut -d: -f2,3 | tr -d '\"\ ')
+        mkdir -p ~/.cargo/bin/
+        curl -sSfL "$download_link" -o ~/.cargo/bin/cargo-get
+        chmod +x ~/.cargo/bin/cargo-get
       shell: bash
     - id: cargo-get
       name: Cargo get metadata
