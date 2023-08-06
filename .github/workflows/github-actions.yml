@@ -15,21 +15,21 @@ jobs:
         uses: actions/checkout@v3
       - name: Get package name
         id: cargo-name
-        uses: meysam81/cargo-get@master
+        uses: nicolaiunrein/cargo-get@master
         with:
           flags: --name
       - name: Get package name with root
-        uses: meysam81/cargo-get@master
+        uses: nicolaiunrein/cargo-get@master
         with:
           flags: --name
           options: --root .
       - name: Get cargo-get version
-        uses: meysam81/cargo-get@master
+        uses: nicolaiunrein/cargo-get@master
         with:
           subcommand: version
       - name: Get package author
         id: cargo-author
-        uses: meysam81/cargo-get@master
+        uses: nicolaiunrein/cargo-get@master
         with:
           flags: --authors
       - name: Print package metadata
@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Get package name
         id: cargo-name
-        uses: meysam81/cargo-get@master
+        uses: nicolaiunrein/cargo-get@master
         with:
           flags: --name
       - name: Print package metadata
