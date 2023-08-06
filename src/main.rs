@@ -23,12 +23,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     let entry_point_absolute =
         fs::canonicalize(entry_point).map_err(|_| "No such file or directory")?;
 
-    let manifest_path =
-        search_manifest_path(&entry_point_absolute).ok_or(r#"No manifest found"#)?;
+    let manifest_path = search_manifest_path(&entry_point_absolute).ok_or("No manifest found")?;
 
-    let manifest = Manifest::from_path(manifest_path)?;
+    let manifest = Manifest::from_path(&manifest_path)?;
 
-    output(&matches, manifest)
+    if let Err(err) = output(&matches, manifest) {
+        eprintln!("Error: {}", err);
+        std::process::exit(1);
+    }
+    Ok(())
 }
 
 // Remove get argument in order to make it work with or without `get` subcommand
@@ -55,54 +58,63 @@ pub fn make_app() -> App<'static, 'static> {
             Arg::with_name("authors")
                 .long("authors")
                 .short("a")
-                .help("get package authors"),
+                .hidden(true)
+                .help("get package.authors"),
         )
         .arg(
             Arg::with_name("edition")
                 .long("edition")
                 .short("e")
-                .help("get package edition"),
+                .hidden(true)
+                .help("get package.edition"),
         )
         .arg(
             Arg::with_name("name")
                 .long("name")
                 .short("n")
-                .help("get package name"),
+                .hidden(true)
+                .help("get package.name"),
         )
         .arg(
             Arg::with_name("homepage")
                 .long("homepage")
                 .short("o")
-                .help("get package homepage"),
+                .hidden(true)
+                .help("get package.homepage"),
         )
         .arg(
             Arg::with_name("keywords")
                 .long("keywords")
                 .short("k")
+                .hidden(true)
                 .help("get package keywords"),
         )
         .arg(
             Arg::with_name("license")
                 .long("license")
                 .short("l")
+                .hidden(true)
                 .help("get package license"),
         )
         .arg(
             Arg::with_name("links")
                 .long("links")
                 .short("i")
+                .hidden(true)
                 .help("get package links"),
         )
         .arg(
             Arg::with_name("description")
                 .long("description")
                 .short("d")
+                .hidden(true)
                 .help("get package description"),
         )
         .arg(
             Arg::with_name("categories")
                 .long("categories")
                 .short("c")
+                .hidden(true)
                 .help("get package categories"),
         )
         .arg(
@@ -131,7 +143,8 @@ pub fn make_app() -> App<'static, 'static> {
             "categories",
         ]))
         .subcommand(
-            App::new("version")
+            App::new("package.version")
+                .alias("version")
                 .setting(AppSettings::DisableVersion)
                 .setting(AppSettings::GlobalVersion)
                 .setting(AppSettings::DeriveDisplayOrder)
@@ -160,10 +173,45 @@ pub fn make_app() -> App<'static, 'static> {
                         .help("get pre-release part"),
                 ),
         )
+        .subcommand(App::new("package.authors").about("get package authors"))
+        .subcommand(App::new("package.categories").about("get package categories"))
+        .subcommand(App::new("package.description").about("get package description"))
+        .subcommand(App::new("package.edition").about("get package edition"))
+        .subcommand(App::new("package.homepage").about("get package homepage"))
+        .subcommand(App::new("package.keywords").about("get package keywords"))
+        .subcommand(App::new("package.license").about("get package license"))
+        .subcommand(App::new("package.version").about("get package version"))
+        .subcommand(App::new("workspace.members").about("get workspace members"))
+        .subcommand(App::new("workspace.package.authors").about("get workspace template authors"))
+        .subcommand(
+            App::new("workspace.package.categories").about("get workspace template categories"),
+        )
+        .subcommand(
+            App::new("workspace.package.description").about("get workspace template description"),
+        )
+        .subcommand(App::new("workspace.package.edition").about("get workspace template edition"))
+        .subcommand(App::new("workspace.package.homepage").about("get workspace template homepage"))
+        .subcommand(App::new("workspace.package.keywords").about("get workspace template keywords"))
+        .subcommand(App::new("workspace.package.license").about("get workspace template license"))
+        .subcommand(App::new("workspace.package.version").about("get workspace template version"))
 }
 
+#[derive(Debug)]
+pub struct InheritanceError(&'static str);
+impl std::fmt::Display for InheritanceError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "The property {:?} is inherited from the workspace parent!",
+            self.0
+        )
+    }
+}
+
+impl Error for InheritanceError {}
+
 pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Error>> {
-    let package = manifest.package.ok_or("Package not found")?;
+    let package = manifest.package.clone().ok_or("Package not found")?;
 
     let delimiter: Delimiter = matches
         .value_of("delimiter")
@@ -172,9 +220,14 @@ pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Er
 
     let delim_string = delimiter.to_string();
 
-    if let Some(version) = matches.subcommand_matches("version") {
+    if let Some(version) = matches.subcommand_matches("package.version") {
         let mut out = Vec::new();
-        let v: semver::Version = package.version.parse().unwrap();
+        let v: semver::Version = package
+            .version
+            .get()
+            .or(Err(InheritanceError("package.version")))?
+            .parse()
+            .unwrap();
 
         if version.is_present("full") {
             println!("{}", v);
@@ -218,21 +271,67 @@ pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Er
     if matches.is_present("name") {
         println!("{}", package.name);
     } else if matches.is_present("homepage") {
-        println!("{}", package.homepage.unwrap_or_default());
+        println!(
+            "{}",
+            package
+                .homepage
+                .unwrap_or_default()
+                .get()
+                .or(Err(InheritanceError("package.homepage")))?
+        );
     } else if matches.is_present("license") {
-        println!("{}", package.license.unwrap_or_default());
+        println!(
+            "{}",
+            package
+                .license
+                .unwrap_or_default()
+                .get()
+                .or(Err(InheritanceError("package.license")))?
+        );
     } else if matches.is_present("description") {
-        println!("{}", package.description.unwrap_or_default());
+        println!(
+            "{}",
+            package
+                .description
+                .unwrap_or_default()
+                .get()
+                .or(Err(InheritanceError("package.description")))?
+        );
     } else if matches.is_present("links") {
         println!("{}", package.links.unwrap_or_default());
     } else if matches.is_present("authors") {
-        println!("{}", package.authors.join(&delim_string))
+        println!(
+            "{}",
+            package
+                .authors
+                .get()
+                .or(Err(InheritanceError("package.authors")))?
+                .join(&delim_string)
+        )
     } else if matches.is_present("keywords") {
-        println!("{}", package.keywords.join(&delim_string))
+        println!(
+            "{}",
+            package
+                .keywords
+                .get()
+                .or(Err(InheritanceError("package.authors")))?
+                .join(&delim_string)
+        )
     } else if matches.is_present("categories") {
-        println!("{}", package.categories.join(&delim_string))
+        println!(
+            "{}",
+            package
+                .categories
+                .get()
+                .or(Err(InheritanceError("package.authors")))?
+                .join(&delim_string)
+        )
     } else if matches.is_present("edition") {
-        let edition = match package.edition {
+        let edition = match package
+            .edition
+            .get()
+            .or(Err(InheritanceError("package.authors")))?
+        {
             cargo_toml::Edition::E2015 => "2015",
             cargo_toml::Edition::E2018 => "2018",
             cargo_toml::Edition::E2021 => "2021",

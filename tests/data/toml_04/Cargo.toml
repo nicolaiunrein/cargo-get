@@ -1,0 +1,18 @@
+[package]
+name = "test-name"
+version.workspace = true
+authors = ["John Doe<john-doe@abc.com>"]
+edition = "2018"
+description = "A very useful description"
+license = "Apache-2.0/MIT"
+keywords = ["binary", "cargo", "cli", "dev-tools", "query"]
+readme = "README.md"
+repository = "https://github.com/nicolaiunrein/cargo-get"
+
+[dependencies]
+cargo_toml = "0.8.1"
+clap = "3.0.0-beta.2"
+semver = "0.11.0"
+
+[dev-dependencies]
+assert_cmd = "1.0.1"
