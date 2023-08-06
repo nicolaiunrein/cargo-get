@@ -34,8 +34,8 @@ jobs:
           flags: --authors
       - name: Print package metadata
         run: |
-          echo "Package name: ${{ steps.cargo-name.outputs.stdout }}"
-          echo "Package author: ${{ steps.cargo-author.outputs.stdout }}"
+          echo "Package name: ${{ steps.cargo-name.outputs.metadata }}"
+          echo "Package author: ${{ steps.cargo-author.outputs.metadata }}"
   macos:
     runs-on: macos-latest
     steps:
@@ -48,4 +48,4 @@ jobs:
           flags: --name
       - name: Print package metadata
         run: |
-          echo "Package name: ${{ steps.cargo-name.outputs.stdout }}"
+          echo "Package name: ${{ steps.cargo-name.outputs.metadata }}"
