@@ -42,16 +42,12 @@ runs:
       name: Install cargo-get
       run: |
         current_target=$(rustc -Vv | grep host | cut -d ' ' -f 2)
-        echo $current_target
+        # for some reason unkonwn to me, this step ensures success of the next!
         command -v curl grep cut tr
         download_link=$(curl -s https://api.github.com/repos/nicolaiunrein/cargo-get/releases/latest | grep x86_64-apple-darwin\" | grep browser_download_url | cut -d: -f2,3 | tr -d '\"\ ')
-        echo $download_link
         mkdir -p ~/.cargo/bin/
-        ls -lh ~/.cargo/bin/
         curl -sSfLo ~/.cargo/bin/cargo-get "$download_link"
-        ls -lh ~/.cargo/bin/
         chmod +x ~/.cargo/bin/cargo-get
-        ls -lh ~/.cargo/bin/
       shell: bash
     - id: cargo-get
       name: Cargo get metadata
