@@ -24,11 +24,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Cache installed binary
-      uses: actions/cache@v3
-      with:
-        path: ~/.cargo/bin/cargo-get
-        key: ${{ runner.os }}-cargo-get
     - if: steps.cache.outputs.cache-hit != 'true' && runner.os == 'Linux'
       name: Install cargo-get
       run: |
@@ -42,8 +37,6 @@ runs:
       name: Install cargo-get
       run: |
         current_target=$(rustc -Vv | grep host | cut -d ' ' -f 2)
-        # for some reason unkonwn to me, this step ensures success of the next!
-        command -v curl grep cut tr
         download_link=$(curl -s https://api.github.com/repos/nicolaiunrein/cargo-get/releases/latest | grep x86_64-apple-darwin\" | grep browser_download_url | cut -d: -f2,3 | tr -d '\"\ ')
         mkdir -p ~/.cargo/bin/
         curl -sSfLo ~/.cargo/bin/cargo-get "$download_link"
