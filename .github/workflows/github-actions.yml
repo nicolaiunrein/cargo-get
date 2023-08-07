@@ -8,24 +8,22 @@ on:
     branches: master
 
 jobs:
-  actions:
+  linux:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
       - name: Get package name
         id: cargo-name
         uses: nicolaiunrein/cargo-get@master
         with:
           flags: --name
       - name: Get package name with root
-        id: cargo-name-root
         uses: nicolaiunrein/cargo-get@master
         with:
           flags: --name
           options: --root .
-      - name: Get package version
-        id: cargo-version
+      - name: Get cargo-get version
         uses: nicolaiunrein/cargo-get@master
         with:
           subcommand: version
@@ -34,3 +32,20 @@ jobs:
         uses: nicolaiunrein/cargo-get@master
         with:
           flags: --authors
+      - name: Print package metadata
+        run: |
+          echo "Package name: ${{ steps.cargo-name.outputs.metadata }}"
+          echo "Package author: ${{ steps.cargo-author.outputs.metadata }}"
+  macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get package name
+        id: cargo-name
+        uses: nicolaiunrein/cargo-get@master
+        with:
+          flags: --name
+      - name: Print package metadata
+        run: |
+          echo "Package name: ${{ steps.cargo-name.outputs.metadata }}"
