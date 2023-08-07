@@ -72,6 +72,7 @@ pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
             .license()
             .ok_or_else(|| NotSpecified("package.license"))?
             .to_string(),
+
         cli::Command::PackageLinks => package()?
             .links()
             .ok_or_else(|| NotSpecified("package.links"))?
@@ -183,117 +184,50 @@ pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
             .categories
             .ok_or_else(|| NotSpecified("workspace.package.categories"))?
             .join(&delim_string),
+        cli::Command::WorkspacePackageDocumentation => ws_package()?
+            .documentation
+            .ok_or_else(|| NotSpecified("workspace.package.documentation"))?,
+
+        cli::Command::WorkspacePackageExclude => ws_package()?
+            .exclude
+            .ok_or_else(|| NotSpecified("workspace.package.exclude"))?
+            .join(&delim_string),
+
+        cli::Command::WorkspacePackageInclude => ws_package()?
+            .include
+            .ok_or_else(|| NotSpecified("workspace.package.include"))?
+            .join(&delim_string),
+
+        cli::Command::WorkspacePackageLicenseFile => ws_package()?
+            .license_file
+            .ok_or_else(|| NotSpecified("workspace.package.license_file"))?
+            .to_string_lossy()
+            .to_string(),
+
+        cli::Command::WorkspacePackagePublish => match ws_package()?.publish {
+            cargo_toml::Publish::Flag(flag) => flag.to_string(),
+            cargo_toml::Publish::Registry(list) => list.join(&delim_string),
+        },
+        cli::Command::WorkspacePackageReadme => ws_package()?
+            .readme
+            .as_path()
+            .ok_or_else(|| NotSpecified("workspace.package.readme"))?
+            .to_string_lossy()
+            .to_string(),
+
+        cli::Command::WorkspacePackageRepository => ws_package()?
+            .repository
+            .ok_or_else(|| NotSpecified("workspace.package.repository"))?,
+
+        cli::Command::WorkspacePackageRustVersion => ws_package()?
+            .rust_version
+            .ok_or_else(|| NotSpecified("workspace.package.rust_version"))?
+            .to_string(),
     };
 
     Ok(output)
 }
 
-//
-// pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Error>> {
-//     let package = || manifest.package.clone().ok_or(NotFound("package"));
-//     let workspace = || manifest.workspace.clone().ok_or(NotFound("workspace"));
-//     let ws_package = || workspace().and_then(|ws| ws.package.ok_or(NotFound("workspace.package")));
-//
-//     let delimiter: Delimiter = matches
-//         .value_of("delimiter")
-//         .map(|s| s.parse().unwrap())
-//         .unwrap_or_default();
-//
-//     let delim_string = delimiter.to_string();
-//
-//     if let Some(version) = matches.subcommand_matches("package.version") {
-//         let v: semver::Version = package()?
-//             .version
-//             .get()
-//             .or(Err(InheritanceError("package.version")))?
-//             .parse()
-//             .map_err(InvalidSemver)?;
-//
-//         match_version(version, v, &delimiter)?;
-//     }
-//
-//     if matches.is_present("name") {
-//         println!("{}", package()?.name);
-//     } else if matches.is_present("homepage") {
-//         println!(
-//             "{}",
-//             package()?
-//                 .homepage
-//                 .unwrap_or_default()
-//                 .get()
-//                 .or(Err(InheritanceError("package.homepage")))?
-//         );
-//     } else if matches.is_present("license") {
-//         println!(
-//             "{}",
-//             package()?
-//                 .license
-//                 .unwrap_or_default()
-//                 .get()
-//                 .or(Err(InheritanceError("package.license")))?
-//         );
-//     } else if matches.is_present("description") {
-//         println!(
-//             "{}",
-//             package()?
-//                 .description
-//                 .unwrap_or_default()
-//                 .get()
-//                 .or(Err(InheritanceError("package.description")))?
-//         );
-//     } else if matches.is_present("links") {
-//         println!("{}", package()?.links.unwrap_or_default());
-//     } else if matches.is_present("authors") {
-//         println!(
-//             "{}",
-//             package()?
-//                 .authors
-//                 .get()
-//                 .or(Err(InheritanceError("package.authors")))?
-//                 .join(&delim_string)
-//         )
-//     } else if matches.is_present("keywords") {
-//         println!(
-//             "{}",
-//             package()?
-//                 .keywords
-//                 .get()
-//                 .or(Err(InheritanceError("package.keywords")))?
-//                 .join(&delim_string)
-//         )
-//     } else if matches.is_present("categories") {
-//         println!(
-//             "{}",
-//             package()?
-//                 .categories
-//                 .get()
-//                 .or(Err(InheritanceError("package.categories")))?
-//                 .join(&delim_string)
-//         )
-//     } else if matches.is_present("edition") {
-//         let edition = match package()?
-//             .edition
-//             .get()
-//             .or(Err(InheritanceError("package.edition")))?
-//         {
-//             cargo_toml::Edition::E2015 => "2015",
-//             cargo_toml::Edition::E2018 => "2018",
-//             cargo_toml::Edition::E2021 => "2021",
-//         };
-//         println!("{}", edition);
-//     } else if let Some(version) = matches.subcommand_matches("workspace.package.version") {
-//         let v: semver::Version = ws_package()?
-//             .version
-//             .ok_or(NotFound("workspace.package.version"))?
-//             .parse()
-//             .map_err(InvalidSemver)?;
-//
-//         match_version(version, v, &delimiter)?;
-//     }
-//
-//     Ok(())
-// }
-//
 fn search_manifest_path(dir: &std::path::Path) -> Option<PathBuf> {
     let manifest = dir.join("Cargo.toml");
 

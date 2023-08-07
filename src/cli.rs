@@ -173,21 +173,29 @@ pub enum Command {
     #[clap(name = "workspace.members")]
     WorkspaceMembers,
 
-    #[clap(name = "workspace.package.version")]
-    #[group(required = false, multiple = false)]
-    WorkspacePackageVersion {
-        #[clap(flatten)]
-        inner: Version,
-    },
-
     #[clap(name = "workspace.package.authors")]
     WorkspacePackageAuthors,
+
+    #[clap(name = "workspace.package.categories")]
+    WorkspacePackageCategories,
+
+    #[clap(name = "workspace.package.description")]
+    WorkspacePackageDescription,
+
+    #[clap(name = "workspace.package.documentation")]
+    WorkspacePackageDocumentation,
 
     #[clap(name = "workspace.package.edition")]
     WorkspacePackageEdition,
 
+    #[clap(name = "workspace.package.exclude")]
+    WorkspacePackageExclude,
+
     #[clap(name = "workspace.package.homepage")]
     WorkspacePackageHomepage,
+
+    #[clap(name = "workspace.package.include")]
+    WorkspacePackageInclude,
 
     #[clap(name = "workspace.package.keywords")]
     WorkspacePackageKeywords,
@@ -195,9 +203,25 @@ pub enum Command {
     #[clap(name = "workspace.package.license")]
     WorkspacePackageLicense,
 
-    #[clap(name = "workspace.package.description")]
-    WorkspacePackageDescription,
+    #[clap(name = "workspace.package.license_file")]
+    WorkspacePackageLicenseFile,
 
-    #[clap(name = "workspace.package.categories")]
-    WorkspacePackageCategories,
+    #[clap(name = "workspace.package.publish")]
+    WorkspacePackagePublish,
+
+    #[clap(name = "workspace.package.readme")]
+    WorkspacePackageReadme,
+
+    #[clap(name = "workspace.package.repository")]
+    WorkspacePackageRepository,
+
+    #[clap(name = "workspace.package.rust_version")]
+    WorkspacePackageRustVersion,
+
+    #[clap(name = "workspace.package.version")]
+    #[group(required = false, multiple = false)]
+    WorkspacePackageVersion {
+        #[clap(flatten)]
+        inner: Version,
+    },
 }
