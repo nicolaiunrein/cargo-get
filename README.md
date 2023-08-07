@@ -1,8 +1,9 @@
 **Cargo plugin to easily query information from Cargo.toml files**
 
 [![crates.io](https://img.shields.io/crates/v/cargo-get.svg)](https://crates.io/crates/cargo-get)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/nicolaiunrein/cargo-get/CI)
+[![CI](https://github.com/nicolaiunrein/cargo-get/actions/workflows/ci.yaml/badge.svg)](https://github.com/nicolaiunrein/cargo-get/actions/workflows/ci.yaml)
 [![build-binary](https://github.com/nicolaiunrein/cargo-get/actions/workflows/build-binary.yml/badge.svg)](https://github.com/nicolaiunrein/cargo-get/releases/latest)
+[![github-actions](https://github.com/nicolaiunrein/cargo-get/actions/workflows/github-actions.yml/badge.svg)](https://github.com/nicolaiunrein/cargo-get/actions/workflows/github-actions.yml)
 
 ### Overview
 
