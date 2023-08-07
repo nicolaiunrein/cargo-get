@@ -10,14 +10,19 @@ pub struct Cli {
     #[command(subcommand, name = "get")]
     pub command: Command,
 
-    #[clap(long = "entry", value_name = "PATH")]
-    pub root: Option<PathBuf>,
+    #[clap(
+        global = true,
+        long,
+        value_name = "PATH",
+        help = "Path to the crate root to query"
+    )]
+    pub entry: Option<PathBuf>,
 
     #[clap(
         global = true,
-        long = "delimiter",
+        long,
         value_name = "Tab | CR | LF | CRLF | String",
-        help = "specify delimiter for list values"
+        help = "Delimiter for array values"
     )]
     pub delimiter: Option<Delimiter>,
 }
@@ -94,32 +99,77 @@ impl Version {
 
 #[derive(Subcommand)]
 pub enum Command {
-    // package
+    // **************** package ****************
+    #[clap(name = "package.name")]
+    PackageName,
+
+    #[clap(name = "package.edition")]
+    PackageEdition,
+
+    #[clap(name = "package.rust_version")]
+    PackageRustVersion,
+
     #[clap(name = "package.version")]
     PackageVersion {
         #[clap(flatten)]
         inner: Version,
     },
+
+    #[clap(name = "package.build")]
+    PackageBuild,
+
+    #[clap(name = "package.workspace")]
+    PackageWorkspace,
+
     #[clap(name = "package.authors")]
     PackageAuthors,
-    #[clap(name = "package.edition")]
-    PackageEdition,
-    #[clap(name = "package.name")]
-    PackageName,
-    #[clap(name = "package.homepage")]
-    PackageHomepage,
-    #[clap(name = "package.keywords")]
-    PackageKeywords,
-    #[clap(name = "package.license")]
-    PackageLicense,
+
     #[clap(name = "package.links")]
     PackageLinks,
+
     #[clap(name = "package.description")]
     PackageDescription,
+
+    #[clap(name = "package.homepage")]
+    PackageHomepage,
+
+    #[clap(name = "package.readme")]
+    PackageReadme,
+
+    #[clap(name = "package.keywords")]
+    PackageKeywords,
+
     #[clap(name = "package.categories")]
     PackageCategories,
 
-    // workspace
+    #[clap(name = "package.exclude")]
+    PackageExclude,
+
+    #[clap(name = "package.include")]
+    PackageInclude,
+
+    #[clap(name = "package.license")]
+    PackageLicense,
+
+    #[clap(name = "package.license_file")]
+    PackageLicenseFile,
+
+    #[clap(name = "package.repository")]
+    PackageRepository,
+
+    #[clap(name = "package.default_run")]
+    PackageDefaultRun,
+
+    #[clap(name = "package.publish")]
+    PackagePublish,
+
+    #[clap(name = "package.resolver")]
+    PackageResolver,
+
+    #[clap(name = "package.metadata")]
+    PackageMetadata,
+
+    // **************** workspace ****************
     #[clap(name = "workspace.members")]
     WorkspaceMembers,
 
@@ -129,18 +179,25 @@ pub enum Command {
         #[clap(flatten)]
         inner: Version,
     },
+
     #[clap(name = "workspace.package.authors")]
     WorkspacePackageAuthors,
+
     #[clap(name = "workspace.package.edition")]
     WorkspacePackageEdition,
+
     #[clap(name = "workspace.package.homepage")]
     WorkspacePackageHomepage,
+
     #[clap(name = "workspace.package.keywords")]
     WorkspacePackageKeywords,
+
     #[clap(name = "workspace.package.license")]
     WorkspacePackageLicense,
+
     #[clap(name = "workspace.package.description")]
     WorkspacePackageDescription,
+
     #[clap(name = "workspace.package.categories")]
     WorkspacePackageCategories,
 }

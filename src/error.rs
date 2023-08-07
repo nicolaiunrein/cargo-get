@@ -16,15 +16,15 @@ impl std::fmt::Display for InheritanceError {
 impl Error for InheritanceError {}
 
 #[derive(Debug)]
-pub struct NotFound(pub &'static str);
+pub struct NotSpecified(pub &'static str);
 
-impl std::fmt::Display for NotFound {
+impl std::fmt::Display for NotSpecified {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} not found", self.0)
+        write!(f, "`{}` not specified in manifest", self.0)
     }
 }
 
-impl Error for NotFound {}
+impl Error for NotSpecified {}
 
 #[derive(Debug)]
 pub struct InvalidSemver(pub semver::Error);
