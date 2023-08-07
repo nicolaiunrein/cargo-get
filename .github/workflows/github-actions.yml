@@ -17,20 +17,20 @@ jobs:
         id: cargo-name
         uses: nicolaiunrein/cargo-get@master
         with:
-          flags: --name
+          subcommand: package.name
       - name: Get package name with root
         id: cargo-name-root
         uses: nicolaiunrein/cargo-get@master
         with:
-          flags: --name
-          options: --root .
+          subcommand: package.name
+          options: --entry .
       - name: Get package version
         id: cargo-version
         uses: nicolaiunrein/cargo-get@master
         with:
           subcommand: version
-      - name: Get package author
-        id: cargo-author
+      - name: Get package authors
+        id: cargo-authors
         uses: nicolaiunrein/cargo-get@master
         with:
-          flags: --authors
+          subcommand: package.authors

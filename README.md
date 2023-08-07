@@ -45,50 +45,75 @@ $ cargo install cargo-get
 
 ```bash
 $ cargo get -h
-cargo-get
-Nicolai Unrein <info@auxcontrol.io>
-Query package info from Cargo.toml in a script-friendly way.
+Cargo plugin to easily query information from Cargo.toml files
 
-USAGE:
-    cargo-get [FLAGS] [OPTIONS] [SUBCOMMAND]
+Usage: cargo-get [OPTIONS] <COMMAND>
 
-FLAGS:
-    -a, --authors        get package authors
-    -e, --edition        get package edition
-    -n, --name           get package name
-    -o, --homepage       get package homepage
-    -k, --keywords       get package keywords
-    -l, --license        get package license
-    -i, --links          get package links
-    -d, --description    get package description
-    -c, --categories     get package categories
-    -h, --help           Prints help information
+Commands:
+  package.name
+  package.edition
+  package.rust_version
+  package.version
+  package.build
+  package.workspace
+  package.authors
+  package.links
+  package.description
+  package.homepage
+  package.readme
+  package.keywords
+  package.categories
+  package.exclude
+  package.include
+  package.license
+  package.license_file
+  package.repository
+  package.default_run
+  package.publish
+  package.resolver
+  package.metadata
+  workspace.members
+  workspace.package.authors
+  workspace.package.categories
+  workspace.package.description
+  workspace.package.documentation
+  workspace.package.edition
+  workspace.package.exclude
+  workspace.package.homepage
+  workspace.package.include
+  workspace.package.keywords
+  workspace.package.license
+  workspace.package.license_file
+  workspace.package.publish
+  workspace.package.readme
+  workspace.package.repository
+  workspace.package.rust_version
+  workspace.package.version
+  help                             Print this message or the help of the given subcommand(s)
 
-OPTIONS:
-        --root <Path>                                  optional entry point
-        --delimiter <Tab | CR | LF | CRLF | String>    specify delimiter for values
-
-SUBCOMMANDS:
-    version    get package version
-    help       Prints this message or the help of the given subcommand(s)
+Options:
+      --entry <PATH>                               Path to the crate root to query
+      --delimiter <Tab | CR | LF | CRLF | String>  Delimiter for array values
+  -h, --help                                       Print help
+  -V, --version                                    Print version
 ```
 
 #### Get Version
 
 ```bash
-$ cargo get version
+$ cargo get package.version
 0.2.1
 
-$ cargo get version --pretty
+$ cargo get package.version --pretty
 v0.2.1
 
-$ cargo get version --major --minor --patch --pre
+$ cargo get package.version --major --minor --patch --pre
 0
 2
 1
 alpha2
 
-$ cargo get version --major --minor --delimiter="."
+$ cargo get package.version --major --minor --delimiter="."
 0.2
 
 ```
@@ -96,13 +121,13 @@ $ cargo get version --major --minor --delimiter="."
 Now it is also easy to run commands like:
 
 ```bash
-git tag $(cargo get version --pretty)
+git tag $(cargo get package.version --pretty)
 ```
 
 #### Get keywords
 
 ```bash
-$ cargo get -k
+$ cargo get package.keywords
 command-line-utilities
 development-tools::cargo-plugins
 ```
@@ -112,13 +137,13 @@ development-tools::cargo-plugins
 ```bash
 # Use one of Tab, CR, LF, CRLF or a custom string.
 
-$ cargo get -k --delimiter Tab
+$ cargo get package.keywords --delimiter Tab
 command-line-utilities 	development-tools::cargo-plugins
 
-$ cargo get -k --delimiter=" -- "
+$ cargo get package.keywords --delimiter=" -- "
 command-line-utilities -- development-tools::cargo-plugins
 
-$ cargo get -k --delimiter=";"
+$ cargo get package.keywords --delimiter=";"
 command-line-utilities;development-tools::cargo-plugins
 ```
 
@@ -126,15 +151,15 @@ command-line-utilities;development-tools::cargo-plugins
 
 ```bash
 # Full path
-$ cargo get -n --root="../../some/other/project/Cargo.toml"
+$ cargo get package.name --entry="../../some/other/project/Cargo.toml"
 some-other-project
 
 # Directory
-$ cargo get -n --root="../../some/other/project"
+$ cargo get package.name --entry="../../some/other/project"
 some-other-project
 
 # Current directory
-$ cargo get -n
+$ cargo get package.name
 current-project
 ```
 
@@ -147,7 +172,7 @@ current-project
         id: cargo-get
         uses: nicolaiunrein/cargo-get@master
         with:
-          flags: --name
+          subcommand: package.name
 ```
 
 #### Package author
@@ -157,7 +182,7 @@ current-project
         id: cargo-get
         uses: nicolaiunrein/cargo-get@master
         with:
-          flags: --author
+          subcommand: package.author
 ```
 
 [release]: https://github.com/nicolaiunrein/cargo-get/releases/latest
