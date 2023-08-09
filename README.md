@@ -183,7 +183,7 @@ current-project
         id: cargo-get
         uses: nicolaiunrein/cargo-get@master
         with:
-          subcommand: package.author
+          subcommand: package.authors
 ```
 
 [release]: https://github.com/nicolaiunrein/cargo-get/releases/latest
