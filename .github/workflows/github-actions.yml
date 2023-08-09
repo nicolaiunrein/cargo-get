@@ -21,10 +21,11 @@ jobs:
       - name: Get package name with root
         uses: nicolaiunrein/cargo-get@master
         with:
+          subcommand: package.name
       - name: Get cargo-get version
         uses: nicolaiunrein/cargo-get@master
         with:
-          subcommand: version
+          subcommand: package.version
       - name: Get package authors
         id: cargo-authors
         uses: nicolaiunrein/cargo-get@master
