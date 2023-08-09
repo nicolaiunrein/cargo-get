@@ -63,7 +63,7 @@ jobs:
         id: package-name
         uses: nicolaiunrein/cargo-get@master
         with:
-          flags: --name
+          subcommand: package.name
       - name: Get binary name
         id: binary-name
         run: |

@@ -17,21 +17,19 @@ jobs:
         id: cargo-name
         uses: nicolaiunrein/cargo-get@master
         with:
-          flags: --name
+          subcommand: package.name
       - name: Get package name with root
         uses: nicolaiunrein/cargo-get@master
         with:
-          flags: --name
-          options: --root .
       - name: Get cargo-get version
         uses: nicolaiunrein/cargo-get@master
         with:
           subcommand: version
-      - name: Get package author
-        id: cargo-author
+      - name: Get package authors
+        id: cargo-authors
         uses: nicolaiunrein/cargo-get@master
         with:
-          flags: --authors
+          subcommand: package.authors
       - name: Print package metadata
         run: |
           echo "Package name: ${{ steps.cargo-name.outputs.metadata }}"

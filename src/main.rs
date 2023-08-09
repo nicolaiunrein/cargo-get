@@ -1,251 +1,237 @@
+mod cli;
 mod delimiter;
+mod error;
 
 use cargo_toml::Manifest;
-use clap::{App, AppSettings, Arg, ArgGroup, ArgMatches};
+use clap::Parser;
 use delimiter::Delimiter;
-use std::env;
-use std::error::Error;
-use std::fs;
-use std::path::Path;
-use std::path::PathBuf;
+use error::NotSpecified;
+use std::{error::Error, path::PathBuf};
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let args = get_args();
-    let app = make_app();
-
-    let matches = app.get_matches_from(args);
-
-    let entry_point = match matches.value_of("root") {
-        Some(p) => p.parse()?,
-        None => env::current_dir()?,
-    };
-
-    let entry_point_absolute =
-        fs::canonicalize(entry_point).map_err(|_| "No such file or directory")?;
-
-    let manifest_path =
-        search_manifest_path(&entry_point_absolute).ok_or(r#"No manifest found"#)?;
-
-    let manifest = Manifest::from_path(manifest_path)?;
-
-    output(&matches, manifest)
-}
-
-// Remove get argument in order to make it work with or without `get` subcommand
-fn get_args() -> Vec<String> {
     let mut args: Vec<_> = std::env::args().collect();
 
     if args.get(1) == Some(&"get".to_owned()) {
         args.remove(1);
     }
 
-    args
-}
+    let cli = cli::Cli::parse_from(args);
 
-pub fn make_app() -> App<'static, 'static> {
-    App::new("cargo-get")
-        .setting(AppSettings::DisableVersion)
-        .setting(AppSettings::ArgRequiredElseHelp)
-        .setting(AppSettings::GlobalVersion)
-        .setting(AppSettings::DeriveDisplayOrder)
-        .setting(AppSettings::VersionlessSubcommands)
-        .author("Nicolai Unrein <n.unrein@gmail.com>")
-        .about("Query package info from Cargo.toml in a script-friendly way.")
-        .arg(
-            Arg::with_name("authors")
-                .long("authors")
-                .short("a")
-                .help("get package authors"),
-        )
-        .arg(
-            Arg::with_name("edition")
-                .long("edition")
-                .short("e")
-                .help("get package edition"),
-        )
-        .arg(
-            Arg::with_name("name")
-                .long("name")
-                .short("n")
-                .help("get package name"),
-        )
-        .arg(
-            Arg::with_name("homepage")
-                .long("homepage")
-                .short("o")
-                .help("get package homepage"),
-        )
-        .arg(
-            Arg::with_name("keywords")
-                .long("keywords")
-                .short("k")
-                .help("get package keywords"),
-        )
-        .arg(
-            Arg::with_name("license")
-                .long("license")
-                .short("l")
-                .help("get package license"),
-        )
-        .arg(
-            Arg::with_name("links")
-                .long("links")
-                .short("i")
-                .help("get package links"),
-        )
-        .arg(
-            Arg::with_name("description")
-                .long("description")
-                .short("d")
-                .help("get package description"),
-        )
-        .arg(
-            Arg::with_name("categories")
-                .long("categories")
-                .short("c")
-                .help("get package categories"),
-        )
-        .arg(
-            Arg::with_name("root")
-                .long("root")
-                .help("optional entry point")
-                .value_name("PATH"),
-        )
-        .arg(
-            Arg::with_name("delimiter")
-                .long("delimiter")
-                .help("specify delimiter for values")
-                .value_name("Tab | CR | LF | CRLF | String")
-                .global(true),
-        )
-        .group(ArgGroup::with_name("version-group").requires("version"))
-        .group(ArgGroup::with_name("get").required(false).args(&[
-            "authors",
-            "edition",
-            "name",
-            "homepage",
-            "keywords",
-            "license",
-            "links",
-            "description",
-            "categories",
-        ]))
-        .subcommand(
-            App::new("version")
-                .setting(AppSettings::DisableVersion)
-                .setting(AppSettings::GlobalVersion)
-                .setting(AppSettings::DeriveDisplayOrder)
-                .setting(AppSettings::VersionlessSubcommands)
-                .about("get package version")
-                .arg(
-                    Arg::with_name("full")
-                        .long("full")
-                        .help("get full version")
-                        .conflicts_with_all(&["major", "minor", "patch", "build", "pre", "pretty"])
-                        .hidden(true),
-                )
-                .arg(
-                    Arg::with_name("pretty")
-                        .long("pretty")
-                        .help("get pretty version eg. v1.2.3")
-                        .conflicts_with_all(&["major", "minor", "patch", "build", "pre", "full"]),
-                )
-                .arg(Arg::with_name("major").long("major").help("get major part"))
-                .arg(Arg::with_name("minor").long("minor").help("get minor part"))
-                .arg(Arg::with_name("patch").long("patch").help("get patch part"))
-                .arg(Arg::with_name("build").long("build").help("get build part"))
-                .arg(
-                    Arg::with_name("pre")
-                        .long("pre")
-                        .help("get pre-release part"),
-                ),
-        )
-}
-
-pub fn output(matches: &ArgMatches, manifest: Manifest) -> Result<(), Box<dyn Error>> {
-    let package = manifest.package.ok_or("Package not found")?;
-
-    let delimiter: Delimiter = matches
-        .value_of("delimiter")
-        .map(|s| s.parse().unwrap())
-        .unwrap_or_default();
-
-    let delim_string = delimiter.to_string();
-
-    if let Some(version) = matches.subcommand_matches("version") {
-        let mut out = Vec::new();
-        let v: semver::Version = package.version.parse().unwrap();
-
-        if version.is_present("full") {
-            println!("{}", v);
-            return Ok(());
+    match output(cli) {
+        Ok(out) => println!("{}", out),
+        Err(err) => {
+            eprintln!("Error: {}", err);
+            std::process::exit(1);
         }
-
-        if version.is_present("pretty") {
-            println!("v{}", v);
-            return Ok(());
-        }
-
-        if version.is_present("major") {
-            out.push(v.major.to_string());
-        }
-
-        if version.is_present("minor") {
-            out.push(v.minor.to_string());
-        }
-
-        if version.is_present("patch") {
-            out.push(v.patch.to_string())
-        }
-
-        if version.is_present("build") {
-            for b in v.build.iter() {
-                out.push(format!("{}", b))
-            }
-        }
-        if version.is_present("pre") {
-            for p in v.pre.iter() {
-                out.push(format!("{}", p))
-            }
-        }
-        if out.is_empty() {
-            out.push(format!("{}", v));
-        }
-        println!("{}", out.join(&delim_string));
-        return Ok(());
     }
 
-    if matches.is_present("name") {
-        println!("{}", package.name);
-    } else if matches.is_present("homepage") {
-        println!("{}", package.homepage.unwrap_or_default());
-    } else if matches.is_present("license") {
-        println!("{}", package.license.unwrap_or_default());
-    } else if matches.is_present("description") {
-        println!("{}", package.description.unwrap_or_default());
-    } else if matches.is_present("links") {
-        println!("{}", package.links.unwrap_or_default());
-    } else if matches.is_present("authors") {
-        println!("{}", package.authors.join(&delim_string))
-    } else if matches.is_present("keywords") {
-        println!("{}", package.keywords.join(&delim_string))
-    } else if matches.is_present("categories") {
-        println!("{}", package.categories.join(&delim_string))
-    } else if matches.is_present("edition") {
-        let edition = match package.edition {
-            cargo_toml::Edition::E2015 => "2015",
-            cargo_toml::Edition::E2018 => "2018",
-            cargo_toml::Edition::E2021 => "2021",
-        };
-        println!("{}", edition);
-    }
     Ok(())
 }
 
-fn search_manifest_path(dir: &Path) -> Option<PathBuf> {
+pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
+    let entry_point = match cli.entry.clone() {
+        Some(p) => p,
+        None => std::env::current_dir()?,
+    };
+
+    let entry_point_absolute =
+        std::fs::canonicalize(entry_point).map_err(|_| "No such file or directory")?;
+
+    let manifest_path = search_manifest_path(&entry_point_absolute).ok_or("No manifest found")?;
+
+    let manifest = Manifest::from_path(manifest_path)?;
+
+    let package = || manifest.package.clone().ok_or(NotSpecified("package"));
+    let workspace = || manifest.workspace.clone().ok_or(NotSpecified("workspace"));
+    let ws_package =
+        || workspace().and_then(|ws| ws.package.ok_or(NotSpecified("workspace.package")));
+
+    let delimiter: Delimiter = cli.delimiter.unwrap_or_default();
+    let delim_string = delimiter.to_string();
+
+    let output = match cli.command {
+        cli::Command::PackageVersion { inner } => {
+            let v: semver::Version = package()?.version().parse()?;
+            inner.match_version(v, &delimiter)?
+        }
+        cli::Command::PackageAuthors => package()?.authors().join(&delim_string),
+
+        cli::Command::PackageEdition => match package()?.edition() {
+            cargo_toml::Edition::E2015 => "2015",
+            cargo_toml::Edition::E2018 => "2018",
+            cargo_toml::Edition::E2021 => "2021",
+        }
+        .to_string(),
+        cli::Command::PackageName => package()?.name().to_string(),
+        cli::Command::PackageHomepage => package()?
+            .homepage()
+            .ok_or(NotSpecified("package.homepage"))?
+            .to_string(),
+        cli::Command::PackageKeywords => package()?.keywords().join(&delim_string),
+        cli::Command::PackageLicense => package()?
+            .license()
+            .ok_or(NotSpecified("package.license"))?
+            .to_string(),
+
+        cli::Command::PackageLinks => package()?
+            .links()
+            .ok_or(NotSpecified("package.links"))?
+            .to_string(),
+        cli::Command::PackageDescription => {
+            package()?.description().unwrap_or_default().to_string()
+        }
+        cli::Command::PackageCategories => package()?.categories().join(&delim_string),
+
+        cli::Command::PackageRustVersion => package()?
+            .rust_version()
+            .ok_or(NotSpecified("package.rust_version"))?
+            .to_string(),
+        cli::Command::PackageBuild => package()?
+            .build
+            .ok_or(NotSpecified("package.build"))?
+            .as_path()
+            .unwrap()
+            .to_string_lossy()
+            .to_string(),
+
+        cli::Command::PackageWorkspace => package()?
+            .workspace
+            .ok_or(NotSpecified("package.workspace"))?
+            .to_string(),
+
+        cli::Command::PackageReadme => package()?
+            .readme()
+            .as_path()
+            .ok_or(NotSpecified("package.readme"))?
+            .to_string_lossy()
+            .to_string(),
+
+        cli::Command::PackageExclude => package()?.exclude().join(&delim_string),
+        cli::Command::PackageInclude => package()?.include().join(&delim_string),
+        cli::Command::PackageLicenseFile => package()?
+            .license_file()
+            .ok_or(NotSpecified("package.license_file"))?
+            .to_string_lossy()
+            .to_string(),
+
+        cli::Command::PackageRepository => package()?
+            .repository()
+            .ok_or(NotSpecified("package.repository"))?
+            .to_string(),
+
+        cli::Command::PackageDefaultRun => package()?
+            .default_run
+            .ok_or(NotSpecified("package.default_run"))?
+            .to_string(),
+
+        cli::Command::PackagePublish => match package()?.publish() {
+            cargo_toml::Publish::Flag(flag) => flag.to_string(),
+            cargo_toml::Publish::Registry(list) => list.join(&delim_string),
+        },
+        cli::Command::PackageResolver => package()?
+            .resolver
+            .ok_or(NotSpecified("package.resolver"))?
+            .to_string(),
+
+        cli::Command::PackageMetadata => package()?
+            .metadata
+            .ok_or(NotSpecified("package.metadata"))?
+            .to_string(),
+
+        cli::Command::WorkspaceMembers => workspace()?.members.join(&delim_string),
+
+        cli::Command::WorkspacePackageVersion { inner } => {
+            let v: semver::Version = ws_package()?
+                .version
+                .ok_or(NotSpecified("workspace.package.version"))?
+                .parse()?;
+            inner.match_version(v, &delimiter)?
+        }
+
+        cli::Command::WorkspacePackageAuthors => ws_package()?
+            .authors
+            .ok_or(NotSpecified("workspace.package.authors"))?
+            .join(&delim_string),
+
+        cli::Command::WorkspacePackageEdition => ws_package()?
+            .edition
+            .map(|e| match e {
+                cargo_toml::Edition::E2015 => "2015",
+                cargo_toml::Edition::E2018 => "2018",
+                cargo_toml::Edition::E2021 => "2021",
+            })
+            .ok_or(NotSpecified("workspace.package.edition"))?
+            .to_string(),
+
+        cli::Command::WorkspacePackageHomepage => ws_package()?
+            .homepage
+            .ok_or(NotSpecified("workspace.package.homepage"))?,
+
+        cli::Command::WorkspacePackageKeywords => ws_package()?
+            .keywords
+            .ok_or(NotSpecified("workspace.package.keywords"))?
+            .join(&delim_string),
+
+        cli::Command::WorkspacePackageLicense => ws_package()?
+            .license
+            .ok_or(NotSpecified("workspace.package.license"))?,
+
+        cli::Command::WorkspacePackageDescription => ws_package()?
+            .description
+            .ok_or(NotSpecified("workspace.package.license"))?,
+
+        cli::Command::WorkspacePackageCategories => ws_package()?
+            .categories
+            .ok_or(NotSpecified("workspace.package.categories"))?
+            .join(&delim_string),
+        cli::Command::WorkspacePackageDocumentation => ws_package()?
+            .documentation
+            .ok_or(NotSpecified("workspace.package.documentation"))?,
+
+        cli::Command::WorkspacePackageExclude => ws_package()?
+            .exclude
+            .ok_or(NotSpecified("workspace.package.exclude"))?
+            .join(&delim_string),
+
+        cli::Command::WorkspacePackageInclude => ws_package()?
+            .include
+            .ok_or(NotSpecified("workspace.package.include"))?
+            .join(&delim_string),
+
+        cli::Command::WorkspacePackageLicenseFile => ws_package()?
+            .license_file
+            .ok_or(NotSpecified("workspace.package.license_file"))?
+            .to_string_lossy()
+            .to_string(),
+
+        cli::Command::WorkspacePackagePublish => match ws_package()?.publish {
+            cargo_toml::Publish::Flag(flag) => flag.to_string(),
+            cargo_toml::Publish::Registry(list) => list.join(&delim_string),
+        },
+        cli::Command::WorkspacePackageReadme => ws_package()?
+            .readme
+            .as_path()
+            .ok_or(NotSpecified("workspace.package.readme"))?
+            .to_string_lossy()
+            .to_string(),
+
+        cli::Command::WorkspacePackageRepository => ws_package()?
+            .repository
+            .ok_or(NotSpecified("workspace.package.repository"))?,
+
+        cli::Command::WorkspacePackageRustVersion => ws_package()?
+            .rust_version
+            .ok_or(NotSpecified("workspace.package.rust_version"))?
+            .to_string(),
+    };
+
+    Ok(output)
+}
+
+fn search_manifest_path(dir: &std::path::Path) -> Option<PathBuf> {
     let manifest = dir.join("Cargo.toml");
 
-    if fs::metadata(&manifest).is_ok() {
+    if std::fs::metadata(&manifest).is_ok() {
         Some(manifest)
     } else {
         dir.parent().and_then(search_manifest_path)
