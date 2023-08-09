@@ -43,7 +43,7 @@ jobs:
         id: cargo-name
         uses: nicolaiunrein/cargo-get@master
         with:
-          flags: --name
+          subcommand: package.name 
       - name: Print package metadata
         run: |
           echo "Package name: ${{ steps.cargo-name.outputs.metadata }}"
