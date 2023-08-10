@@ -61,7 +61,7 @@ jobs:
           cargo build --release --target ${{ matrix.target }}
       - name: Get package name
         id: package-name
-        uses: nicolaiunrein/cargo-get@f7adc0d819e0394ee13f8a07e56ed451be9f76ba
+        uses: nicolaiunrein/cargo-get@68edc18d8bdca1f2e09518d89b862d76feb61a3c
         with:
           subcommand: package.name
       - name: Get binary name
