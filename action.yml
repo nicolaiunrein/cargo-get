@@ -24,7 +24,6 @@ runs:
   using: composite
   steps:
     - if: runner.os == 'Linux'
-      continue-on-error: true
       name: Install cargo-get
       run: |
         current_target=$(rustc -Vv | grep host | cut -d ' ' -f 2)
@@ -34,7 +33,6 @@ runs:
         chmod +x ~/.cargo/bin/cargo-get
       shell: bash
     - if: runner.os == 'macOS'
-      continue-on-error: true
       name: Install cargo-get
       run: |
         current_target=$(rustc -Vv | grep host | cut -d ' ' -f 2)
@@ -44,6 +42,7 @@ runs:
         chmod +x ~/.cargo/bin/cargo-get
       shell: bash
     - if: failure()
+      continue-on-error: true
       name: Resort to building the binary instead
       run: |
         if [ -n "$CARGO_GET_VERSION" ]; then
