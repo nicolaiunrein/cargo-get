@@ -19,6 +19,6 @@ jobs:
         uses: actions/checkout@v3
       - name: Get package name
         id: cargo-name
-        uses: nicolaiunrein/cargo-get@9cc9c32b2bd67a0b029d05b8a50b71004ff12808
+        uses: nicolaiunrein/cargo-get@1fc79e967ed81606e36eddeef51f870a873d5f4f
         with:
           subcommand: package.name
