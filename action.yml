@@ -44,7 +44,7 @@ runs:
     - if: failure()
       name: Resort to building the binary instead
       run: |
-        if [[ ! -z "$CARGO_GET_VERSION"]]; then
+        if [[ -n "$CARGO_GET_VERSION"]]; then
           cargo install cargo-get --version "$CARGO_GET_VERSION"
         else
           cargo install cargo-get
