@@ -19,6 +19,6 @@ jobs:
         uses: actions/checkout@v3
       - name: Get package name
         id: cargo-name
-        uses: nicolaiunrein/cargo-get@${{ github.sha }}
+        uses: nicolaiunrein/cargo-get@master
         with:
           subcommand: package.name
