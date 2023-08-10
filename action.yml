@@ -42,7 +42,6 @@ runs:
         chmod +x ~/.cargo/bin/cargo-get
       shell: bash
     - if: failure()
-      continue-on-error: true
       name: Resort to building the binary instead
       run: |
         if [ -n "$CARGO_GET_VERSION" ]; then
@@ -51,7 +50,8 @@ runs:
           cargo install cargo-get
         fi
       shell: bash
-    - id: cargo-get
+    - if: always()
+      id: cargo-get
       name: Cargo get metadata
       run: |
         metadata=$(cargo get ${{ inputs.flags }} ${{ inputs.options }} ${{ inputs.subcommand }})
