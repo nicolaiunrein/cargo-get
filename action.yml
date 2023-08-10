@@ -24,6 +24,7 @@ runs:
   using: composite
   steps:
     - if: runner.os == 'Linux'
+      continue-on-error: true
       name: Install cargo-get
       run: |
         current_target=$(rustc -Vv | grep host | cut -d ' ' -f 2)
@@ -33,6 +34,7 @@ runs:
         chmod +x ~/.cargo/bin/cargo-get
       shell: bash
     - if: runner.os == 'macOS'
+      continue-on-error: true
       name: Install cargo-get
       run: |
         current_target=$(rustc -Vv | grep host | cut -d ' ' -f 2)
@@ -41,17 +43,23 @@ runs:
         curl -sSfLo ~/.cargo/bin/cargo-get "$download_link"
         chmod +x ~/.cargo/bin/cargo-get
       shell: bash
-    - if: failure()
-      name: Resort to building the binary instead
+    - name: Resort to building the binary if we can't find a prebuilt one
       run: |
-        if [ -n "$CARGO_GET_VERSION" ]; then
-          cargo install cargo-get --version "$CARGO_GET_VERSION"
+        install_cargo_get() {
+          if [ -n "$CARGO_GET_VERSION" ]; then
+            cargo install cargo-get --version "$CARGO_GET_VERSION"
+          else
+            cargo install cargo-get
+          fi
+        }
+
+        if [ -x "$(command -v cargo-get)" ]; then
+          echo "cargo-get is already installed"
         else
-          cargo install cargo-get
+          install_cargo_get
         fi
       shell: bash
-    - if: always()
-      id: cargo-get
+    - id: cargo-get
       name: Cargo get metadata
       run: |
         metadata=$(cargo get ${{ inputs.flags }} ${{ inputs.options }} ${{ inputs.subcommand }})
