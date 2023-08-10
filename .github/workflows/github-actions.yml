@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Get package name
         id: cargo-name
-        uses: nicolaiunrein/cargo-get@6c8d41ae46049f97f2dc59555bff615cc988c62d
+        uses: nicolaiunrein/cargo-get@4e1d255578933f667566404b1e3fc2f6837e2c07
         with:
           subcommand: package.name
       - name: Print package metadata
