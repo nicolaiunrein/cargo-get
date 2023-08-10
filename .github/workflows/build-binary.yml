@@ -61,9 +61,9 @@ jobs:
           cargo build --release --target ${{ matrix.target }}
       - name: Get package name
         id: package-name
-        uses: nicolaiunrein/cargo-get@e6b3e386efa2e87dca814608de927de72d17c48b
-        with:
-          subcommand: package.name
+        run: |
+          cargo install --path .
+          echo "metadata=$(cargo get package.name)" >> $GITHUB_OUTPUT
       - name: Get binary name
         id: binary-name
         run: |

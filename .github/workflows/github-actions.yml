@@ -8,43 +8,17 @@ on:
     branches: master
 
 jobs:
-  linux:
-    runs-on: ubuntu-latest
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Get package name
         id: cargo-name
-        uses: nicolaiunrein/cargo-get@master
+        uses: nicolaiunrein/cargo-get@${{ github.sha }}
         with:
           subcommand: package.name
-      - name: Get package name with root
-        uses: nicolaiunrein/cargo-get@master
-        with:
-          subcommand: package.name
-      - name: Get cargo-get version
-        uses: nicolaiunrein/cargo-get@master
-        with:
-          subcommand: package.version
-      - name: Get package authors
-        id: cargo-authors
-        uses: nicolaiunrein/cargo-get@master
-        with:
-          subcommand: package.authors
-      - name: Print package metadata
-        run: |
-          echo "Package name: ${{ steps.cargo-name.outputs.metadata }}"
-          echo "Package author: ${{ steps.cargo-author.outputs.metadata }}"
-  macos:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Get package name
-        id: cargo-name
-        uses: nicolaiunrein/cargo-get@master
-        with:
-          subcommand: package.name 
-      - name: Print package metadata
-        run: |
-          echo "Package name: ${{ steps.cargo-name.outputs.metadata }}"
