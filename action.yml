@@ -41,7 +41,7 @@ runs:
         curl -sSfLo ~/.cargo/bin/cargo-get "$download_link"
         chmod +x ~/.cargo/bin/cargo-get
       shell: bash
-    - if: failed()
+    - if: failure()
       name: Resort to building the binary instead
       run: |
         if [[ ! -z "$CARGO_GET_VERSION"]]; then
