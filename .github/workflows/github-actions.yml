@@ -1,4 +1,4 @@
-name: github-actions
+name: self-test-action
 
 on:
   push:
