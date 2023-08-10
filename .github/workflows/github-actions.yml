@@ -22,3 +22,6 @@ jobs:
         uses: nicolaiunrein/cargo-get@6c8d41ae46049f97f2dc59555bff615cc988c62d
         with:
           subcommand: package.name
+      - name: Print package metadata
+        run: |
+          echo "metadata=${{ steps.cargo-name.outputs.metadata }}"
