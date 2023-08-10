@@ -49,6 +49,19 @@ runs:
 
         download_cargo_get || echo "Failed for some reason!"
       shell: bash
+    - if: runner.os == 'Windows'
+      name: Install cargo-get
+      run: |
+        download_cargo_get() {
+          current_target=$(rustc -Vv | grep host | cut -d ' ' -f 2)
+          download_link=$(curl -s https://api.github.com/repos/nicolaiunrein/cargo-get/releases/latest | grep x86_64-pc-windows-gnu\" | grep browser_download_url | cut -d: -f2,3 | tr -d '\"\ ')
+          mkdir -p ~/.cargo/bin/
+          curl -sSfLo ~/.cargo/bin/cargo-get.exe "$download_link"
+          chmod +x ~/.cargo/bin/cargo-get.exe
+        }
+
+        download_cargo_get || echo "Failed for some reason!"
+      shell: bash
     - name: Resort to building the binary if we can't find a prebuilt one
       run: |
         install_cargo_get() {

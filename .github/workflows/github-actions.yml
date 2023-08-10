@@ -23,9 +23,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Get package name
+      - name: Get package metadata
         id: cargo-name
-        uses: nicolaiunrein/cargo-get@4e1d255578933f667566404b1e3fc2f6837e2c07
+        uses: nicolaiunrein/cargo-get@master
         with:
           subcommand: ${{ matrix.metadata }}
       - name: Print package metadata
