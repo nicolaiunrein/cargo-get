@@ -41,6 +41,15 @@ runs:
         curl -sSfLo ~/.cargo/bin/cargo-get "$download_link"
         chmod +x ~/.cargo/bin/cargo-get
       shell: bash
+    - if: failed()
+      name: Resort to building the binary instead
+      run: |
+        if [[ ! -z "$CARGO_GET_VERSION"]]; then
+          cargo install cargo-get --version "$CARGO_GET_VERSION"
+        else
+          cargo install cargo-get
+        fi
+      shell: bash
     - id: cargo-get
       name: Cargo get metadata
       run: |
