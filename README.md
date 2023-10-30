@@ -29,7 +29,6 @@ cargo-get uses rustfmt for formatting and clippy for linting.
 2. Make the binary executable using `chmod +x`
 3. Place the binary in your `$PATH` and rename it to `cargo-get`.
 
-
 ### Cargo
 
 Ensure that you have a fairly recent version of rust/cargo installed.
@@ -93,10 +92,11 @@ Commands:
   help                             Print this message or the help of the given subcommand(s)
 
 Options:
-      --entry <PATH>                               Path to the crate root to query
-      --delimiter <Tab | CR | LF | CRLF | String>  Delimiter for array values
-  -h, --help                                       Print help
-  -V, --version                                    Print version
+      --entry <PATH>                                 Path to the crate root to query
+      --delimiter <Tab | CR | LF | CRLF | String>    Delimiter for array values
+      --terminator <CR | LF | CRLF | NUL | String>   String terminator for printed values. (Defaults to `LF`)
+  -h, --help                                         Print help
+  -V, --version                                      Print version
 ```
 
 #### Get Version
@@ -169,21 +169,21 @@ current-project
 #### Package name
 
 ```yaml
-      - name: Get package name
-        id: cargo-get
-        uses: nicolaiunrein/cargo-get@master
-        with:
-          subcommand: package.name
+- name: Get package name
+  id: cargo-get
+  uses: nicolaiunrein/cargo-get@master
+  with:
+    subcommand: package.name
 ```
 
 #### Package author
 
 ```yaml
-      - name: Get package author
-        id: cargo-get
-        uses: nicolaiunrein/cargo-get@master
-        with:
-          subcommand: package.authors
+- name: Get package author
+  id: cargo-get
+  uses: nicolaiunrein/cargo-get@master
+  with:
+    subcommand: package.authors
 ```
 
 [release]: https://github.com/nicolaiunrein/cargo-get/releases/latest
