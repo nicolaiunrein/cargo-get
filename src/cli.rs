@@ -2,7 +2,7 @@ use std::{error::Error, path::PathBuf};
 
 use clap::{Args, Parser, Subcommand};
 
-use crate::delimiter::Delimiter;
+use crate::{delimiter::Delimiter, terminator::Terminator};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -25,6 +25,14 @@ pub struct Cli {
         help = "Delimiter for array values"
     )]
     pub delimiter: Option<Delimiter>,
+
+    #[clap(
+        global = true,
+        long,
+        value_name = "CR | LF | CRLF | Nul | String",
+        help = "String terminator for the output that is returned"
+    )]
+    pub terminator: Option<Terminator>,
 }
 
 #[derive(Args, Clone)]

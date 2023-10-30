@@ -1,26 +1,28 @@
 mod cli;
 mod delimiter;
 mod error;
+mod terminator;
 
 use cargo_toml::Manifest;
 use clap::Parser;
 use delimiter::Delimiter;
 use error::NotSpecified;
 use std::{error::Error, path::PathBuf};
+use terminator::Terminator;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut args: Vec<_> = std::env::args().collect();
 
-    if args.get(1) == Some(&"get".to_owned()) {
+    if let Some("get") = args.get(1).map(String::as_ref) {
         args.remove(1);
     }
 
     let cli = cli::Cli::parse_from(args);
 
     match output(cli) {
-        Ok(out) => println!("{}", out),
+        Ok(out) => print!("{out}"),
         Err(err) => {
-            eprintln!("Error: {}", err);
+            eprintln!("Error: {err}");
             std::process::exit(1);
         }
     }
@@ -28,6 +30,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Generate output string that will be printed to the console
 pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
     let entry_point = match cli.entry.clone() {
         Some(p) => p,
@@ -48,8 +51,9 @@ pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
 
     let delimiter: Delimiter = cli.delimiter.unwrap_or_default();
     let delim_string = delimiter.to_string();
+    let terminator: Terminator = cli.terminator.unwrap_or_default();
 
-    let output = match cli.command {
+    let mut output = match cli.command {
         cli::Command::PackageVersion { inner } => {
             let v: semver::Version = package()?.version().parse()?;
             inner.match_version(v, &delimiter)?
@@ -225,9 +229,12 @@ pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
             .to_string(),
     };
 
+    output.push_str(terminator.to_string().as_ref());
+
     Ok(output)
 }
 
+/// Search the given directory for Cargo.toml, recursively searching upwards
 fn search_manifest_path(dir: &std::path::Path) -> Option<PathBuf> {
     let manifest = dir.join("Cargo.toml");
 
