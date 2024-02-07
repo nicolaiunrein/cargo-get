@@ -2,8 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/cargo-get.svg)](https://crates.io/crates/cargo-get)
 [![CI](https://github.com/nicolaiunrein/cargo-get/actions/workflows/ci.yaml/badge.svg)](https://github.com/nicolaiunrein/cargo-get/actions/workflows/ci.yaml)
-[![build-binary](https://github.com/nicolaiunrein/cargo-get/actions/workflows/build-binary.yml/badge.svg)](https://github.com/nicolaiunrein/cargo-get/releases/latest)
-[![github-actions](https://github.com/nicolaiunrein/cargo-get/actions/workflows/github-actions.yml/badge.svg)](https://github.com/nicolaiunrein/cargo-get/actions/workflows/github-actions.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/nicolaiunrein/cargo-get?label=download)](https://github.com/nicolaiunrein/cargo-get/releases/latest)
 
 ### Overview
 
