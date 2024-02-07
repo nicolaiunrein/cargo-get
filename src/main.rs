@@ -81,9 +81,10 @@ pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
             .links()
             .ok_or(NotSpecified("package.links"))?
             .to_string(),
-        cli::Command::PackageDescription => {
-            package()?.description().unwrap_or_default().to_string()
-        }
+        cli::Command::PackageDescription => package()?
+            .description()
+            .ok_or(NotSpecified("package.links"))?
+            .to_string(),
         cli::Command::PackageCategories => package()?.categories().join(&delim_string),
 
         cli::Command::PackageRustVersion => package()?
