@@ -18,4 +18,4 @@ semver = "1.0.23"
 
 [dev-dependencies]
 assert_cmd = "2.0.16"
-predicates = "3.1.0"
+predicates = "3.1.2"
