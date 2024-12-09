@@ -60,12 +60,7 @@ pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
         }
         cli::Command::PackageAuthors => package()?.authors().join(&delim_string),
 
-        cli::Command::PackageEdition => match package()?.edition() {
-            cargo_toml::Edition::E2015 => "2015",
-            cargo_toml::Edition::E2018 => "2018",
-            cargo_toml::Edition::E2021 => "2021",
-        }
-        .to_string(),
+        cli::Command::PackageEdition => package()?.edition().to_string(),
         cli::Command::PackageName => package()?.name().to_string(),
         cli::Command::PackageHomepage => package()?
             .homepage()
@@ -160,11 +155,7 @@ pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
 
         cli::Command::WorkspacePackageEdition => ws_package()?
             .edition
-            .map(|e| match e {
-                cargo_toml::Edition::E2015 => "2015",
-                cargo_toml::Edition::E2018 => "2018",
-                cargo_toml::Edition::E2021 => "2021",
-            })
+            .map(|edition| edition.to_string())
             .ok_or(NotSpecified("workspace.package.edition"))?
             .to_string(),
 
