@@ -7,7 +7,7 @@ concurrency:
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
@@ -86,7 +86,7 @@ jobs:
           cd target/${{ matrix.target }}/release
           sha256sum ${{ steps.package-name.outputs.metadata }}-${{ matrix.target }} > ${{ steps.package-name.outputs.metadata }}-${{ matrix.target }}.sha256
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.package-name.outputs.metadata }}-${{ matrix.target }}
           path: |
@@ -100,4 +100,3 @@ jobs:
           files: |
             target/${{ matrix.target }}/release/${{ steps.package-name.outputs.metadata }}-${{ matrix.target }}
             target/${{ matrix.target }}/release/${{ steps.package-name.outputs.metadata }}-${{ matrix.target }}.sha256
-  
