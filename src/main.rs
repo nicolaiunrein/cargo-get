@@ -37,8 +37,8 @@ pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
         None => std::env::current_dir()?,
     };
 
-    let entry_point_absolute =
-        std::fs::canonicalize(entry_point).map_err(|_| "No such file or directory")?;
+    let entry_point_absolute = std::fs::canonicalize(&entry_point)
+        .map_err(|_| format!("Missing/invalid entry point [{}]", entry_point.display()))?;
 
     let manifest_path = search_manifest_path(&entry_point_absolute).ok_or("No manifest found")?;
 

@@ -9,7 +9,7 @@ fn run_no_such_file_or_directory() {
         .arg("package.name")
         .assert();
     assert.failure().stderr(predicate::eq(
-        b"Error: No such file or directory\n" as &[u8],
+        b"Error: Missing/invalid entry point [/tmp/this/does/not/exist]\n" as &[u8],
     ));
 }
 
