@@ -181,6 +181,9 @@ pub enum Command {
     #[clap(name = "workspace.members")]
     WorkspaceMembers,
 
+    #[clap(name = "workspace.default_members")]
+    WorkspaceDefaultMembers,
+
     #[clap(name = "workspace.package.authors")]
     WorkspacePackageAuthors,
 
