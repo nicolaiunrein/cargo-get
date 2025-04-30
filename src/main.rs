@@ -140,6 +140,8 @@ pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
 
         cli::Command::WorkspaceMembers => workspace()?.members.join(&delim_string),
 
+        cli::Command::WorkspaceDefaultMembers => workspace()?.default_members.join(&delim_string),
+
         cli::Command::WorkspacePackageVersion { inner } => {
             let v: semver::Version = ws_package()?
                 .version
