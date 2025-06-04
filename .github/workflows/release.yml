@@ -42,8 +42,6 @@ jobs:
             target: x86_64-apple-darwin
           - image: ubuntu-latest
             target: x86_64-pc-windows-gnu
-          - image: ubuntu-latest
-            target: x86_64-pc-windows-msvc
       fail-fast: false
     steps:
       - name: Checkout
@@ -59,6 +57,13 @@ jobs:
       - name: Install Rust stable
         run: |
           rustup toolchain install stable --target ${{ matrix.target }}
+
+      - if: contains(matrix.target, 'aarch64')
+        name: Install Arm dependencies
+        run: |
+          dpkg --add-architecture aarch64
+          apt-get update
+          apt-get install x11:aarch64
       - if: contains(matrix.target, 'windows')
         name: Install Windows dependencies
         run: |
