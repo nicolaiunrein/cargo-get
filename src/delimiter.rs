@@ -16,7 +16,7 @@ impl fmt::Display for Delimiter {
             Self::Cr => write!(f, "\r"),
             Self::Lf => writeln!(f),
             Self::CrLf => write!(f, "\r\n"),
-            Self::String(s) => write!(f, "{}", s),
+            Self::String(s) => write!(f, "{s}"),
         }
     }
 }

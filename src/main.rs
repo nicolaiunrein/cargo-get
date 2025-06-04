@@ -97,6 +97,7 @@ pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
         cli::Command::PackageWorkspace => package()?
             .workspace
             .ok_or(NotSpecified("package.workspace"))?
+            .to_string_lossy()
             .to_string(),
 
         cli::Command::PackageReadme => package()?
