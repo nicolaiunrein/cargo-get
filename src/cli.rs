@@ -71,7 +71,7 @@ impl Version {
         }
 
         if self.pretty {
-            return Ok(format!("v{}", v));
+            return Ok(format!("v{v}"));
         }
 
         let mut out = Vec::new();
