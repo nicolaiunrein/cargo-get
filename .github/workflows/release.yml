@@ -34,9 +34,9 @@ jobs:
             target: x86_64-unknown-linux-gnu
           - image: ubuntu-latest
             target: x86_64-unknown-linux-musl
-          - image: ubuntu-latest
+          - image: ubuntu-24.04-arm
             target: aarch64-unknown-linux-gnu
-          - image: ubuntu-latest
+          - image: ubuntu-24.04-arm
             target: aarch64-unknown-linux-musl
           - image: macos-latest
             target: x86_64-apple-darwin
@@ -57,13 +57,6 @@ jobs:
       - name: Install Rust stable
         run: |
           rustup toolchain install stable --target ${{ matrix.target }}
-
-      - if: contains(matrix.target, 'aarch64')
-        name: Install Arm dependencies
-        run: |
-          dpkg --add-architecture aarch64
-          apt-get update
-          apt-get install x11:aarch64
       - if: contains(matrix.target, 'windows')
         name: Install Windows dependencies
         run: |
