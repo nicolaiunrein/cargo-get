@@ -121,6 +121,18 @@ fn run_description() {
 }
 
 #[test]
+fn run_description_missing() {
+    let mut cmd = Command::cargo_bin("cargo-get").unwrap();
+    let p = std::fs::canonicalize("tests/data/toml_06").unwrap();
+    cmd.current_dir(p);
+
+    let assert = cmd.arg("package.description").assert();
+    assert.failure().stderr(predicate::eq(
+        b"Error: `package.description` not specified in manifest\n" as &[u8],
+    ));
+}
+
+#[test]
 fn run_categories_empty() {
     let mut cmd = Command::cargo_bin("cargo-get").unwrap();
     let p = std::fs::canonicalize("tests/data/toml_01").unwrap();
