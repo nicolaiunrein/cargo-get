@@ -165,24 +165,46 @@ current-project
 
 ### GitHub Actions
 
-#### Package name
+Please also have a look at this [demo-repo](https://github.com/nicolaiunrein/cargo-get-actions-test)
+
+#### All fields
+
+```yaml
+- name: Get Metadata
+  id: metadata
+  uses: nicolaiunrein/cargo-get@master
+
+- name: Check variables
+  run: |
+    echo "Package Name"
+    echo "${{ steps.metadata.outputs.package_name}}"
+    echo "-----------------------------------------"
+
+    echo "Package Version"
+    echo "${{ steps.metadata.outputs.package_version}}"
+    echo "-----------------------------------------"
+
+    echo "Package Categories"
+    echo "${{ steps.metadata.outputs.package_categories}}"
+    echo "-----------------------------------------"
+
+    echo "Package Keywords"
+    echo "${{ steps.metadata.outputs.package_keywords}}"
+    echo "-----------------------------------------"
+```
+
+#### Single value
 
 ```yaml
 - name: Get package name
-  id: cargo-get
+  id: package_name
   uses: nicolaiunrein/cargo-get@master
   with:
     subcommand: package.name
-```
 
-#### Package author
-
-```yaml
-- name: Get package author
-  id: cargo-get
-  uses: nicolaiunrein/cargo-get@master
-  with:
-    subcommand: package.authors
+- name: Print Output
+  run: |
+    echo ${{ steps.package_name.outputs.metadata }}
 ```
 
 [release]: https://github.com/nicolaiunrein/cargo-get/releases/latest

@@ -20,6 +20,88 @@ outputs:
   metadata:
     description: "Cargo package metadata"
     value: ${{ steps.cargo-get.outputs.metadata }}
+
+  # Update when cli changes
+  package_name:
+    value: ${{ steps.cargo-get.outputs.package_name }}
+  package_edition:
+    value: ${{ steps.cargo-get.outputs.package_edition }}
+  package_rust_version:
+    value: ${{ steps.cargo-get.outputs.package_rust_version }}
+  package_version:
+    value: ${{ steps.cargo-get.outputs.package_version }}
+  package_build:
+    value: ${{ steps.cargo-get.outputs.package_build }}
+  package_workspace:
+    value: ${{ steps.cargo-get.outputs.package_workspace }}
+  package_authors:
+    value: ${{ steps.cargo-get.outputs.package_authors }}
+  package_links:
+    value: ${{ steps.cargo-get.outputs.package_links }}
+  package_description:
+    value: ${{ steps.cargo-get.outputs.package_description }}
+  package_homepage:
+    value: ${{ steps.cargo-get.outputs.package_homepage }}
+  package_readme:
+    value: ${{ steps.cargo-get.outputs.package_readme }}
+  package_keywords:
+    value: ${{ steps.cargo-get.outputs.package_keywords }}
+  package_categories:
+    value: ${{ steps.cargo-get.outputs.package_categories }}
+  package_exclude:
+    value: ${{ steps.cargo-get.outputs.package_exclude }}
+  package_include:
+    value: ${{ steps.cargo-get.outputs.package_include }}
+  package_license:
+    value: ${{ steps.cargo-get.outputs.package_license }}
+  package_license_file:
+    value: ${{ steps.cargo-get.outputs.package_license_file }}
+  package_repository:
+    value: ${{ steps.cargo-get.outputs.package_repository }}
+  package_default_run:
+    value: ${{ steps.cargo-get.outputs.package_default_run }}
+  package_publish:
+    value: ${{ steps.cargo-get.outputs.package_publish }}
+  package_resolver:
+    value: ${{ steps.cargo-get.outputs.package_resolver }}
+  package_metadata:
+    value: ${{ steps.cargo-get.outputs.package_metadata }}
+  workspace_members:
+    value: ${{ steps.cargo-get.outputs.workspace_members }}
+  workspace_default_members:
+    value: ${{ steps.cargo-get.outputs.workspace_default_members }}
+  workspace_package_authors:
+    value: ${{ steps.cargo-get.outputs.workspace_package_authors }}
+  workspace_package_categories:
+    value: ${{ steps.cargo-get.outputs.workspace_package_categories }}
+  workspace_package_description:
+    value: ${{ steps.cargo-get.outputs.workspace_package_description }}
+  workspace_package_documentation:
+    value: ${{ steps.cargo-get.outputs.workspace_package_documentation }}
+  workspace_package_edition:
+    value: ${{ steps.cargo-get.outputs.workspace_package_edition }}
+  workspace_package_exclude:
+    value: ${{ steps.cargo-get.outputs.workspace_package_exclude }}
+  workspace_package_homepage:
+    value: ${{ steps.cargo-get.outputs.workspace_package_homepage }}
+  workspace_package_include:
+    value: ${{ steps.cargo-get.outputs.workspace_package_include }}
+  workspace_package_keywords:
+    value: ${{ steps.cargo-get.outputs.workspace_package_keywords }}
+  workspace_package_license:
+    value: ${{ steps.cargo-get.outputs.workspace_package_license }}
+  workspace_package_license_file:
+    value: ${{ steps.cargo-get.outputs.workspace_package_license_file }}
+  workspace_package_publish:
+    value: ${{ steps.cargo-get.outputs.workspace_package_publish }}
+  workspace_package_readme:
+    value: ${{ steps.cargo-get.outputs.workspace_package_readme }}
+  workspace_package_repository:
+    value: ${{ steps.cargo-get.outputs.workspace_package_repository }}
+  workspace_package_rust_version:
+    value: ${{ steps.cargo-get.outputs.workspace_package_rust_version }}
+  workspace_package_version:
+    value: ${{ steps.cargo-get.outputs.workspace_package_version }}
 runs:
   using: composite
   steps:
