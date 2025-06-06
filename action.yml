@@ -81,6 +81,10 @@ runs:
     - id: cargo-get
       name: Cargo get metadata
       run: |
-        metadata=$(cargo get ${{ inputs.flags }} ${{ inputs.options }} ${{ inputs.subcommand }})
-        echo "metadata=$metadata" >> $GITHUB_OUTPUT
+        if [ -n "${{ inputs.subcommand }}" ]; then
+          metadata=$(cargo get ${{ inputs.flags }} ${{ inputs.options }} ${{ inputs.subcommand }})
+          echo "metadata=$metadata" >> $GITHUB_OUTPUT
+        else
+          echo "$(cargo get all --output-format github-action)" >> $GITHUB_OUTPUT
+        fi
       shell: bash

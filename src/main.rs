@@ -1,10 +1,12 @@
 mod cli;
 mod delimiter;
 mod error;
+mod output_format;
 mod terminator;
 
 use cargo_toml::Manifest;
 use clap::Parser;
+use cli::MaybeCommand;
 use delimiter::Delimiter;
 use error::NotSpecified;
 use std::{error::Error, path::PathBuf};
@@ -53,178 +55,199 @@ pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
     let delim_string = delimiter.to_string();
     let terminator: Terminator = cli.terminator.unwrap_or_default();
 
-    let mut output = match cli.command {
-        cli::Command::PackageVersion { inner } => {
-            let v: semver::Version = package()?.version().parse()?;
-            inner.match_version(v, &delimiter)?
-        }
-        cli::Command::PackageAuthors => package()?.authors().join(&delim_string),
+    let get_output = |cmd: &cli::Command| {
+        let output = match cmd {
+            cli::Command::PackageVersion { inner } => {
+                let v: semver::Version = package()?.version().parse()?;
+                inner.match_version(v, &delimiter)?
+            }
+            cli::Command::PackageAuthors => package()?.authors().join(&delim_string),
 
-        cli::Command::PackageEdition => package()?.edition().to_string(),
-        cli::Command::PackageName => package()?.name().to_string(),
-        cli::Command::PackageHomepage => package()?
-            .homepage()
-            .ok_or(NotSpecified("package.homepage"))?
-            .to_string(),
-        cli::Command::PackageKeywords => package()?.keywords().join(&delim_string),
-        cli::Command::PackageLicense => package()?
-            .license()
-            .ok_or(NotSpecified("package.license"))?
-            .to_string(),
+            cli::Command::PackageEdition => package()?.edition().to_string(),
+            cli::Command::PackageName => package()?.name().to_string(),
+            cli::Command::PackageHomepage => package()?
+                .homepage()
+                .ok_or(NotSpecified("package.homepage"))?
+                .to_string(),
+            cli::Command::PackageKeywords => package()?.keywords().join(&delim_string),
+            cli::Command::PackageLicense => package()?
+                .license()
+                .ok_or(NotSpecified("package.license"))?
+                .to_string(),
+            cli::Command::PackageLinks => package()?
+                .links()
+                .ok_or(NotSpecified("package.links"))?
+                .to_string(),
+            cli::Command::PackageDescription => package()?
+                .description()
+                .ok_or(NotSpecified("package.description"))?
+                .to_string(),
+            cli::Command::PackageCategories => package()?.categories().join(&delim_string),
+            cli::Command::PackageRustVersion => package()?
+                .rust_version()
+                .ok_or(NotSpecified("package.rust_version"))?
+                .to_string(),
+            cli::Command::PackageBuild => package()?
+                .build
+                .ok_or(NotSpecified("package.build"))?
+                .as_path()
+                .unwrap()
+                .to_string_lossy()
+                .to_string(),
 
-        cli::Command::PackageLinks => package()?
-            .links()
-            .ok_or(NotSpecified("package.links"))?
-            .to_string(),
-        cli::Command::PackageDescription => package()?
-            .description()
-            .ok_or(NotSpecified("package.description"))?
-            .to_string(),
-        cli::Command::PackageCategories => package()?.categories().join(&delim_string),
+            cli::Command::PackageWorkspace => package()?
+                .workspace
+                .ok_or(NotSpecified("package.workspace"))?
+                .to_string_lossy()
+                .to_string(),
 
-        cli::Command::PackageRustVersion => package()?
-            .rust_version()
-            .ok_or(NotSpecified("package.rust_version"))?
-            .to_string(),
-        cli::Command::PackageBuild => package()?
-            .build
-            .ok_or(NotSpecified("package.build"))?
-            .as_path()
-            .unwrap()
-            .to_string_lossy()
-            .to_string(),
+            cli::Command::PackageReadme => package()?
+                .readme()
+                .as_path()
+                .ok_or(NotSpecified("package.readme"))?
+                .to_string_lossy()
+                .to_string(),
 
-        cli::Command::PackageWorkspace => package()?
-            .workspace
-            .ok_or(NotSpecified("package.workspace"))?
-            .to_string_lossy()
-            .to_string(),
+            cli::Command::PackageExclude => package()?.exclude().join(&delim_string),
+            cli::Command::PackageInclude => package()?.include().join(&delim_string),
+            cli::Command::PackageLicenseFile => package()?
+                .license_file()
+                .ok_or(NotSpecified("package.license_file"))?
+                .to_string_lossy()
+                .to_string(),
 
-        cli::Command::PackageReadme => package()?
-            .readme()
-            .as_path()
-            .ok_or(NotSpecified("package.readme"))?
-            .to_string_lossy()
-            .to_string(),
+            cli::Command::PackageRepository => package()?
+                .repository()
+                .ok_or(NotSpecified("package.repository"))?
+                .to_string(),
 
-        cli::Command::PackageExclude => package()?.exclude().join(&delim_string),
-        cli::Command::PackageInclude => package()?.include().join(&delim_string),
-        cli::Command::PackageLicenseFile => package()?
-            .license_file()
-            .ok_or(NotSpecified("package.license_file"))?
-            .to_string_lossy()
-            .to_string(),
+            cli::Command::PackageDefaultRun => package()?
+                .default_run
+                .ok_or(NotSpecified("package.default_run"))?
+                .to_string(),
 
-        cli::Command::PackageRepository => package()?
-            .repository()
-            .ok_or(NotSpecified("package.repository"))?
-            .to_string(),
+            cli::Command::PackagePublish => match package()?.publish() {
+                cargo_toml::Publish::Flag(flag) => flag.to_string(),
+                cargo_toml::Publish::Registry(list) => list.join(&delim_string),
+            },
+            cli::Command::PackageResolver => package()?
+                .resolver
+                .ok_or(NotSpecified("package.resolver"))?
+                .to_string(),
 
-        cli::Command::PackageDefaultRun => package()?
-            .default_run
-            .ok_or(NotSpecified("package.default_run"))?
-            .to_string(),
+            cli::Command::PackageMetadata => package()?
+                .metadata
+                .ok_or(NotSpecified("package.metadata"))?
+                .to_string(),
 
-        cli::Command::PackagePublish => match package()?.publish() {
-            cargo_toml::Publish::Flag(flag) => flag.to_string(),
-            cargo_toml::Publish::Registry(list) => list.join(&delim_string),
-        },
-        cli::Command::PackageResolver => package()?
-            .resolver
-            .ok_or(NotSpecified("package.resolver"))?
-            .to_string(),
+            cli::Command::WorkspaceMembers => workspace()?.members.join(&delim_string),
 
-        cli::Command::PackageMetadata => package()?
-            .metadata
-            .ok_or(NotSpecified("package.metadata"))?
-            .to_string(),
+            cli::Command::WorkspaceDefaultMembers => {
+                workspace()?.default_members.join(&delim_string)
+            }
 
-        cli::Command::WorkspaceMembers => workspace()?.members.join(&delim_string),
+            cli::Command::WorkspacePackageVersion { inner } => {
+                let v: semver::Version = ws_package()?
+                    .version
+                    .ok_or(NotSpecified("workspace.package.version"))?
+                    .parse()?;
+                inner.match_version(v, &delimiter)?
+            }
 
-        cli::Command::WorkspaceDefaultMembers => workspace()?.default_members.join(&delim_string),
+            cli::Command::WorkspacePackageAuthors => ws_package()?
+                .authors
+                .ok_or(NotSpecified("workspace.package.authors"))?
+                .join(&delim_string),
 
-        cli::Command::WorkspacePackageVersion { inner } => {
-            let v: semver::Version = ws_package()?
-                .version
-                .ok_or(NotSpecified("workspace.package.version"))?
-                .parse()?;
-            inner.match_version(v, &delimiter)?
-        }
+            cli::Command::WorkspacePackageEdition => ws_package()?
+                .edition
+                .map(|edition| edition.to_string())
+                .ok_or(NotSpecified("workspace.package.edition"))?
+                .to_string(),
 
-        cli::Command::WorkspacePackageAuthors => ws_package()?
-            .authors
-            .ok_or(NotSpecified("workspace.package.authors"))?
-            .join(&delim_string),
+            cli::Command::WorkspacePackageHomepage => ws_package()?
+                .homepage
+                .ok_or(NotSpecified("workspace.package.homepage"))?,
 
-        cli::Command::WorkspacePackageEdition => ws_package()?
-            .edition
-            .map(|edition| edition.to_string())
-            .ok_or(NotSpecified("workspace.package.edition"))?
-            .to_string(),
+            cli::Command::WorkspacePackageKeywords => ws_package()?
+                .keywords
+                .ok_or(NotSpecified("workspace.package.keywords"))?
+                .join(&delim_string),
 
-        cli::Command::WorkspacePackageHomepage => ws_package()?
-            .homepage
-            .ok_or(NotSpecified("workspace.package.homepage"))?,
+            cli::Command::WorkspacePackageLicense => ws_package()?
+                .license
+                .ok_or(NotSpecified("workspace.package.license"))?,
 
-        cli::Command::WorkspacePackageKeywords => ws_package()?
-            .keywords
-            .ok_or(NotSpecified("workspace.package.keywords"))?
-            .join(&delim_string),
+            cli::Command::WorkspacePackageDescription => ws_package()?
+                .description
+                .ok_or(NotSpecified("workspace.package.license"))?,
 
-        cli::Command::WorkspacePackageLicense => ws_package()?
-            .license
-            .ok_or(NotSpecified("workspace.package.license"))?,
+            cli::Command::WorkspacePackageCategories => ws_package()?
+                .categories
+                .ok_or(NotSpecified("workspace.package.categories"))?
+                .join(&delim_string),
+            cli::Command::WorkspacePackageDocumentation => ws_package()?
+                .documentation
+                .ok_or(NotSpecified("workspace.package.documentation"))?,
 
-        cli::Command::WorkspacePackageDescription => ws_package()?
-            .description
-            .ok_or(NotSpecified("workspace.package.license"))?,
+            cli::Command::WorkspacePackageExclude => ws_package()?
+                .exclude
+                .ok_or(NotSpecified("workspace.package.exclude"))?
+                .join(&delim_string),
 
-        cli::Command::WorkspacePackageCategories => ws_package()?
-            .categories
-            .ok_or(NotSpecified("workspace.package.categories"))?
-            .join(&delim_string),
-        cli::Command::WorkspacePackageDocumentation => ws_package()?
-            .documentation
-            .ok_or(NotSpecified("workspace.package.documentation"))?,
+            cli::Command::WorkspacePackageInclude => ws_package()?
+                .include
+                .ok_or(NotSpecified("workspace.package.include"))?
+                .join(&delim_string),
 
-        cli::Command::WorkspacePackageExclude => ws_package()?
-            .exclude
-            .ok_or(NotSpecified("workspace.package.exclude"))?
-            .join(&delim_string),
+            cli::Command::WorkspacePackageLicenseFile => ws_package()?
+                .license_file
+                .ok_or(NotSpecified("workspace.package.license_file"))?
+                .to_string_lossy()
+                .to_string(),
 
-        cli::Command::WorkspacePackageInclude => ws_package()?
-            .include
-            .ok_or(NotSpecified("workspace.package.include"))?
-            .join(&delim_string),
+            cli::Command::WorkspacePackagePublish => match ws_package()?.publish {
+                cargo_toml::Publish::Flag(flag) => flag.to_string(),
+                cargo_toml::Publish::Registry(list) => list.join(&delim_string),
+            },
+            cli::Command::WorkspacePackageReadme => ws_package()?
+                .readme
+                .as_path()
+                .ok_or(NotSpecified("workspace.package.readme"))?
+                .to_string_lossy()
+                .to_string(),
 
-        cli::Command::WorkspacePackageLicenseFile => ws_package()?
-            .license_file
-            .ok_or(NotSpecified("workspace.package.license_file"))?
-            .to_string_lossy()
-            .to_string(),
+            cli::Command::WorkspacePackageRepository => ws_package()?
+                .repository
+                .ok_or(NotSpecified("workspace.package.repository"))?,
 
-        cli::Command::WorkspacePackagePublish => match ws_package()?.publish {
-            cargo_toml::Publish::Flag(flag) => flag.to_string(),
-            cargo_toml::Publish::Registry(list) => list.join(&delim_string),
-        },
-        cli::Command::WorkspacePackageReadme => ws_package()?
-            .readme
-            .as_path()
-            .ok_or(NotSpecified("workspace.package.readme"))?
-            .to_string_lossy()
-            .to_string(),
+            cli::Command::WorkspacePackageRustVersion => ws_package()?
+                .rust_version
+                .ok_or(NotSpecified("workspace.package.rust_version"))?
+                .to_string(),
+        };
 
-        cli::Command::WorkspacePackageRepository => ws_package()?
-            .repository
-            .ok_or(NotSpecified("workspace.package.repository"))?,
-
-        cli::Command::WorkspacePackageRustVersion => ws_package()?
-            .rust_version
-            .ok_or(NotSpecified("workspace.package.rust_version"))?
-            .to_string(),
+        Result::<_, Box<dyn Error>>::Ok(output)
     };
 
-    output.push_str(terminator.to_string().as_ref());
+    let output = match cli.command {
+        MaybeCommand::Command(cmd) => {
+            let mut output = get_output(&cmd)?;
+            output.push_str(terminator.to_string().as_ref());
+            output
+        }
+        MaybeCommand::All(all) => {
+            use strum::IntoEnumIterator;
+
+            cli::Command::iter()
+                .filter_map(|cmd| {
+                    let output = get_output(&cmd).ok()?;
+                    Some((cmd, output))
+                })
+                .map(|(cmd, res)| all.output_format.format_pair(cmd, &res))
+                .collect()
+        }
+    };
 
     Ok(output)
 }

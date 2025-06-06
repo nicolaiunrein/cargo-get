@@ -2,13 +2,26 @@ use std::{error::Error, path::PathBuf};
 
 use clap::{Args, Parser, Subcommand};
 
-use crate::{delimiter::Delimiter, terminator::Terminator};
+use crate::{delimiter::Delimiter, output_format::OutputFormat, terminator::Terminator};
+
+#[derive(Parser, Debug)]
+pub struct All {
+    #[clap(long, help = "Output Format for multiple values")]
+    pub output_format: OutputFormat,
+}
+
+#[derive(Subcommand, Debug)]
+pub enum MaybeCommand {
+    #[clap(flatten)]
+    Command(Command),
+    All(All),
+}
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
     #[command(subcommand, name = "get")]
-    pub command: Command,
+    pub command: MaybeCommand,
 
     #[clap(
         global = true,
@@ -35,7 +48,7 @@ pub struct Cli {
     pub terminator: Option<Terminator>,
 }
 
-#[derive(Args, Clone)]
+#[derive(Args, Clone, Debug, Default)]
 #[group(required = false)]
 pub struct Version {
     #[arg(long, conflicts_with_all = ["pretty"])]
@@ -105,7 +118,10 @@ impl Version {
     }
 }
 
-#[derive(Subcommand)]
+#[derive(
+    Subcommand, strum::Display, Debug, strum::EnumIter, strum::EnumString, strum::VariantNames,
+)]
+#[strum(serialize_all = "snake_case")]
 pub enum Command {
     // **************** package ****************
     #[clap(name = "package.name")]
