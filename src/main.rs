@@ -78,7 +78,7 @@ pub fn output(cli: cli::Cli) -> Result<String, Box<dyn Error>> {
             .to_string(),
         cli::Command::PackageDescription => package()?
             .description()
-            .ok_or(NotSpecified("package.links"))?
+            .ok_or(NotSpecified("package.description"))?
             .to_string(),
         cli::Command::PackageCategories => package()?.categories().join(&delim_string),
 
